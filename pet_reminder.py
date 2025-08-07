@@ -307,9 +307,9 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
     """Create HTML page that serves calendar with device detection"""
     # Base64 encode the web page specific logo
     logo_data_url = ""
-    if os.path.exists("BI-Logo-2.png"):
+    if os.path.exists("Boehringer_Logo_RGB_Black.png"):
         try:
-            with open("BI-Logo-2.png", "rb") as f:
+            with open("Boehringer_Logo_RGB_Black.png", "rb") as f:
                 logo_bytes = f.read()
                 logo_b64 = base64.b64encode(logo_bytes).decode()
                 logo_data_url = f"data:image/png;base64,{logo_b64}"
@@ -322,9 +322,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         times_html_list += f"• {reminder_details['times']}<br>"
         times_html_list = times_html_list.rstrip('<br>')
     
-    
     qr_base64 = base64.b64encode(qr_image_bytes).decode()
-
 
     html_content = f"""
 <!DOCTYPE html>
@@ -333,7 +331,26 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐾 {pet_name.upper()} - Medication Reminder</title>
+    
+    <!-- Import Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
     <style>
+        /* CSS Variables for consistent company styling */
+        :root {{
+            --primary-font: Arial, sans-serif;
+            --secondary-font: 'Open Sans', sans-serif;
+            --primary-color: #333333;
+            --button-primary-bg: #262C65;
+            --button-primary-hover: #0055aa;
+            --button-secondary-bg: #6c757d;
+            --button-secondary-hover: #545b62;
+            --background-color: #ffffff;
+            --card-background: #f8f9fa;
+            --border-color: #e9ecef;
+            --accent-color: #262C65;
+        }}
+        
         * {{
             margin: 0;
             padding: 0;
@@ -341,26 +358,26 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         }}
         
         body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--secondary-font);
             margin: 0;
             padding: 20px;
-            background: #08312a;
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ffffff;
+            color: var(--primary-color);
         }}
         
         .container {{
-            background: linear-gradient(135deg, #0a3d33, #08312a);
-            border: 2px solid #00e47c;
+            background: #ffffff;
+            border: 2px solid var(--border-color);
             border-radius: 20px;
             padding: 30px;
             max-width: 420px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }}
         
         .header {{
@@ -384,28 +401,35 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         
         .logo-fallback {{
             font-size: 40px;
-            color: #00e47c;
+            color: var(--accent-color);
         }}
         
+        /* Company Typography - H1 for pet name */
         .pet-name {{
-            font-size: 32px;
+            font-family: var(--primary-font);
             font-weight: bold;
-            color: #00e47c;
+            font-size: 60px;
+            line-height: 67px;
+            color: var(--accent-color);
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 2px;
         }}
         
+        /* Company Typography - Hero Body for medication */
         .medication {{
-            font-size: 20px;
-            color: #ffffff;
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 22px;
+            line-height: 36px;
+            color: var(--primary-color);
             margin-bottom: 25px;
             opacity: 0.9;
         }}
         
         .details {{
-            background: rgba(0, 228, 124, 0.1);
-            border: 1px solid #00e47c;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 25px;
@@ -419,126 +443,166 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             font-size: 15px;
         }}
         
+        /* Company Typography - Superhead1 for detail labels */
         .detail-label {{
-            color: #00e47c;
+            font-family: var(--secondary-font);
             font-weight: 600;
+            font-size: 18px;
+            line-height: 28px;
+            color: var(--accent-color);
         }}
         
+        /* Company Typography - Body1 for detail values */
         .detail-value {{
-            color: #ffffff;
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 28px;
+            color: var(--primary-color);
             flex: 1;
             text-align: right;
         }}
         
         .times-section {{
-            background: rgba(0, 228, 124, 0.05);
-            border: 1px dashed #00e47c;
+            background: rgba(38, 44, 101, 0.05);
+            border: 1px dashed var(--accent-color);
             border-radius: 10px;
             padding: 15px;
             margin-top: 15px;
             text-align: left;
         }}
         
+        /* Company Typography - Superhead1 for times title */
         .times-title {{
-            color: #00e47c;
+            font-family: var(--secondary-font);
             font-weight: 600;
+            font-size: 18px;
+            line-height: 28px;
+            color: var(--accent-color);
             margin-bottom: 8px;
-            font-size: 14px;
         }}
         
+        /* Company Typography - Body2 for times list */
         .times-list {{
-            color: #ffffff;
-            font-size: 14px;
-            line-height: 1.6;
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            color: var(--primary-color);
         }}
         
         .notes-section {{
-            background: rgba(0, 228, 124, 0.05);
-            border: 1px dashed #00e47c;
+            background: rgba(38, 44, 101, 0.05);
+            border: 1px dashed var(--accent-color);
             border-radius: 10px;
             padding: 15px;
             margin-top: 15px;
             text-align: left;
         }}
         
+        /* Company Typography - Superhead1 for notes title */
         .notes-title {{
-            color: #00e47c;
+            font-family: var(--secondary-font);
             font-weight: 600;
+            font-size: 18px;
+            line-height: 28px;
+            color: var(--accent-color);
             margin-bottom: 8px;
-            font-size: 14px;
         }}
         
+        /* Company Typography - Body2 for notes text */
         .notes-text {{
-            color: #ffffff;
-            font-size: 14px;
-            line-height: 1.4;
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            color: var(--primary-color);
             opacity: 0.9;
         }}
         
+        /* Company Button Styles */
         .btn {{
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            padding: 18px;
+            padding: 0;
             margin: 15px 0;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            box-sizing: border-box;
         }}
         
         .btn:hover {{
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 228, 124, 0.3);
+            box-shadow: 0 8px 20px rgba(38, 44, 101, 0.3);
         }}
         
         .btn-primary {{
-            background: linear-gradient(45deg, #00e47c, #00b85c);
-            color: #08312a;
-            font-weight: 700;
+            font-family: var(--primary-font) !important;
+            font-weight: bold !important;
+            font-size: 14pt !important;
+            text-transform: capitalize !important;
+            letter-spacing: 0 !important;
+            height: 53px !important;
+            border-radius: 6px !important;
+            background: var(--accent-color) !important;
+            color: #ffffff !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            line-height: 1 !important;
         }}
         
         .instructions {{
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card-background);
             border-radius: 10px;
             padding: 20px;
             margin-top: 20px;
-            font-size: 14px;
-            color: #ffffff;
+            color: var(--primary-color);
             line-height: 1.5;
         }}
         
+        /* Company Typography - Body2 for instructions title */
         .instructions-title {{
-            color: #00e47c;
+            font-family: var(--secondary-font);
             font-weight: 600;
-            margin-bottom: 10px;
             font-size: 16px;
+            line-height: 24px;
+            color: var(--accent-color);
+            margin-bottom: 10px;
         }}
         
         .device-specific {{
             margin-top: 15px;
             padding: 15px;
-            background: rgba(0, 228, 124, 0.1);
+            background: rgba(38, 44, 101, 0.05);
             border-radius: 8px;
-            border-left: 4px solid #00e47c;
+            border-left: 4px solid var(--accent-color);
         }}
 
-        /* QR Code section - Simplified for mobile */
+        /* QR Code section - Desktop Only */
         .qr-section {{
-            background-color: #f8f9fa;
+            background-color: var(--card-background);
             padding: 20px;
             text-align: center;
-            border: 3px solid #00e47c;
+            border: 3px solid var(--accent-color);
+            display: block;
         }}
         
+        /* Company Typography - Subhead2 for QR title */
         .qr-title {{
-            color: #08312a;
-            font-size: 20px;
+            font-family: var(--primary-font);
             font-weight: bold;
+            font-size: 22px;
+            line-height: 28px;
+            color: var(--accent-color);
             margin-bottom: 15px;
         }}
 
@@ -547,28 +611,34 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             height: 200px;
             margin: 10px auto;
             background-color: #ffffff;
-            border: 2px solid #00e47c;
+            border: 2px solid var(--accent-color);
             padding: 10px;
             display: block;
         }}
 
-         .qr-instructions {{
-            color: #08312a;
+        /* Company Typography - Body2 for QR instructions */
+        .qr-instructions {{
+            font-family: var(--secondary-font);
+            font-weight: 400;
             font-size: 16px;
-            font-weight: bold;
+            line-height: 24px;
+            color: var(--primary-color);
             margin: 15px 0 10px 0;
         }}
         
         .qr-link {{
-            color: #08312a;
+            color: var(--primary-color);
             margin: 10px 0;
         }}
         
         .qr-link a {{
-            color: #007bff;
-            text-decoration: underline;
+            font-family: var(--primary-font);
             font-weight: bold;
             font-size: 14px;
+            text-transform: capitalize;
+            letter-spacing: 0;
+            color: var(--button-primary-bg);
+            text-decoration: underline;
         }}
         
         .scan-tip {{
@@ -578,7 +648,14 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             margin: 15px 0;
             border-radius: 5px;
             color: #856404;
-            font-size: 13px;
+        }}
+        
+        /* Company Typography - Disclaimer for scan tip */
+        .scan-tip {{
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 24px;
         }}
         
         @media (max-width: 480px) {{
@@ -590,12 +667,62 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 padding: 25px 20px;
             }}
             
+            /* Hide QR code section on mobile */
+            .qr-section {{
+                display: none !important;
+            }}
+            
+            /* Mobile Typography Adjustments */
             .pet-name {{
-                font-size: 26px;
+                font-size: 48px;
+                line-height: 53px;
             }}
             
             .medication {{
+                font-size: 16px;
+                line-height: 28px;
+            }}
+            
+            .detail-label {{
+                font-size: 14px;
+                line-height: 20px;
+            }}
+            
+            .detail-value {{
+                font-size: 14px;
+                line-height: 20px;
+            }}
+            
+            .times-title,
+            .notes-title {{
+                font-size: 14px;
+                line-height: 20px;
+            }}
+            
+            .times-list,
+            .notes-text {{
+                font-size: 10px;
+                line-height: 17px;
+            }}
+            
+            .qr-title {{
                 font-size: 18px;
+                line-height: 24px;
+            }}
+            
+            .qr-instructions {{
+                font-size: 10px;
+                line-height: 17px;
+            }}
+            
+            .instructions-title {{
+                font-size: 10px;
+                line-height: 17px;
+            }}
+            
+            .scan-tip {{
+                font-size: 11px;
+                line-height: 20px;
             }}
             
             .btn {{
@@ -611,6 +738,13 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             .logo-img {{
                 max-width: 80px;
                 max-height: 80px;
+            }}
+        }}
+        
+        /* Media query for tablets and larger screens - Show QR code */
+        @media (min-width: 481px) {{
+            .qr-section {{
+                display: block !important;
             }}
         }}
     </style>
@@ -665,15 +799,12 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
 
         <!-- QR Code Section -->
         <div class="qr-section">
-            <div class="qr-title">📱 Scan QR Code</div>
+            <div class="qr-title">📱 Scan QR Code to add to Mobile Calendar!</div>
             <div style="text-align: center; margin: 15px 0;">
                 <img src="data:image/png;base64,{qr_base64}"
                     alt="QR Code for Pet Reminder"
                     class="qr-image"
-                    style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #00e47c; padding: 10px; background-color: white;" />
-            </div>
-            <div class="qr-link">
-                Can't scan? <a href="{calendar_url}">Click here instead</a>
+                    style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
             </div>
         </div>
     </div>
@@ -705,7 +836,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                         
                         setTimeout(function() {{
                             downloadBtn.innerHTML = '📅 Add to My Calendar';
-                            downloadBtn.style.background = 'linear-gradient(45deg, #00e47c, #00b85c)';
+                            downloadBtn.style.background = 'var(--accent-color)';
                         }}, 2000);
                     }}, 500);
                 }});
@@ -753,7 +884,7 @@ def generate_qr_code(web_page_url):
     qr.make(fit=True)
     
     # Create QR code with green background
-    qr_img = qr.make_image(fill_color="black", back_color="#00e47c")
+    qr_img = qr.make_image(fill_color="black", back_color="#009FDF")
     
     img_buffer = io.BytesIO()
     qr_img.save(img_buffer, format='PNG')
@@ -982,16 +1113,22 @@ def generate_content(pet_name, product_name, start_date, dosage, selected_time, 
             'times': selected_time,
             'notes': notes
         }
-        # Generate QR code (use a fallback URL if web page not available)
-        qr_target = calendar_url if calendar_url else f"data:text/plain,{pet_name} - {product_name} Reminder"
-        qr_image_bytes = generate_qr_code(qr_target)
+        
 
         # Create web page (may be None if S3 not configured)
         web_page_url = None
         if calendar_url:
+            qr_image_bytes_placeholder = generate_qr_code("placeholder")
+            html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes_placeholder)
+            web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
+            
+            # Generate QR code (use a fallback URL if web page not available)
+            qr_target = web_page_url if web_page_url else f"data:text/plain,{pet_name} - {product_name} Reminder"
+            qr_image_bytes = generate_qr_code(qr_target)
+
             html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes)
             web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
-        
+            
         # Generate the combined reminder image
         reminder_image = create_reminder_image(pet_name, product_name, reminder_details, qr_image_bytes)
         
@@ -1024,86 +1161,659 @@ def generate_content(pet_name, product_name, start_date, dosage, selected_time, 
         st.error(f"Error generating content: {str(e)}")
         return False
 
-def display_generated_content():
-    if not st.session_state.content_generated or not st.session_state.generated_content:
-        return
-    
-    content = st.session_state.generated_content
-    
-    # Display reminder card
-    st.image(content['reminder_image_bytes'], use_container_width=True)
-
-def main():
-    # Initialize session state
-    init_session_state()
-    
-    # Add mobile-responsive CSS
-    st.markdown("""
+def get_company_styles():
+    """
+    Returns the complete company style guide CSS for Streamlit with enhanced form label targeting
+    """
+    return """
     <style>
+    /* Import Google Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap');
+    
+    /* CSS Variables for consistent styling */
+    :root {
+        --primary-font: 'Arial', sans-serif;
+        --secondary-font: 'Open Sans', sans-serif;
+        --primary-color: #333333;
+        --button-primary-bg: #262C65;
+        --button-primary-hover: #0056b3;
+        --button-secondary-bg: #6c757d;
+        --button-secondary-hover: #545b62;
+    }
+    
+    /* Base container styling */
     .main .block-container {
         padding-top: 2rem;
         padding-bottom: 2rem;
         max-width: 100%;
+        font-family: var(--secondary-font);
     }
     
+    /* Typography Styles - Desktop */
+    .company-h1 {
+        font-family: var(--primary-font);
+        font-weight: bold;
+        font-size: 60px;
+        line-height: 67px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    .company-h2 {
+        font-family: var(--primary-font);
+        font-weight: bold;
+        font-size: 48px;
+        line-height: 53px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    .company-subhead1 {
+        font-family: var(--primary-font);
+        font-weight: bold;
+        font-size: 28px;
+        line-height: 36px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    .company-subhead2 {
+        font-family: var(--primary-font);
+        font-weight: bold;
+        font-size: 22px;
+        line-height: 28px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    .company-superhead1 {
+        font-family: var(--secondary-font);
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 28px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    .company-hero-body {
+        font-family: var(--secondary-font);
+        font-weight: 400;
+        font-size: 22px;
+        line-height: 36px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    .company-body1 {
+        font-family: var(--secondary-font);
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 28px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    .company-body2 {
+        font-family: var(--secondary-font);
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 24px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    .company-disclaimer {
+        font-family: var(--secondary-font);
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 24px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    .company-isi {
+        font-family: var(--secondary-font);
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 30px;
+        margin: 0;
+        color: var(--primary-color);
+    }
+    
+    /* Custom Button Styles - Fixed font specifications */
+    .company-btn-large {
+        font-family: Arial, sans-serif !important;
+        font-weight: bold !important;
+        font-size: 14pt !important;
+        text-transform: capitalize !important;
+        letter-spacing: 0 !important;
+        height: 53px !important;
+        padding: 0 40px !important;
+        border-radius: 6px !important;
+        border: none !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-decoration: none !important;
+        transition: background-color 0.3s ease !important;
+    }
+    
+    .company-btn-medium {
+        font-family: Arial, sans-serif !important;
+        font-weight: bold !important;
+        font-size: 14pt !important;
+        text-transform: capitalize !important;
+        letter-spacing: 0 !important;
+        height: 40px !important;
+        padding: 0 40px !important;
+        border-radius: 6px !important;
+        border: none !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-decoration: none !important;
+        transition: background-color 0.3s ease !important;
+    }
+    
+    .company-btn-small {
+        font-family: Arial, sans-serif !important;
+        font-weight: bold !important;
+        font-size: 14pt !important;
+        text-transform: capitalize !important;
+        letter-spacing: 0 !important;
+        height: 33px !important;
+        padding: 0 40px !important;
+        border-radius: 6px !important;
+        border: none !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-decoration: none !important;
+        transition: background-color 0.3s ease !important;
+    }
+    
+    .company-btn-primary {
+        background-color: #262C65 !important;
+        color: white !important;
+    }
+    
+    .company-btn-primary:hover {
+        background-color: #0055aa !important;
+        color: white !important;
+    }
+    
+    .company-btn-secondary {
+        background-color: var(--button-secondary-bg) !important;
+        color: white !important;
+    }
+    
+    .company-btn-secondary:hover {
+        background-color: var(--button-secondary-hover) !important;
+        color: white !important;
+    }
+    
+    /* Text Links - Fixed font specifications */
+    .company-text-link {
+        font-family: Arial, sans-serif;
+        font-weight: bold;
+        font-size: 14px;
+        text-transform: capitalize;
+        letter-spacing: 0;
+        color: var(--button-primary-bg);
+        text-decoration: none;
+        cursor: pointer;
+    }
+    
+    .company-text-link:hover {
+        color: var(--button-primary-hover);
+        text-decoration: underline;
+    }
+    
+    .company-text-link-chevron {
+        padding-right: 4px;
+    }
+    
+    /* Override Streamlit default button styles - More specific targeting */
+    .stButton button,
+    .stButton > div > button,
+    button[data-testid="stBaseButton-primary"],
+    button[data-testid="stBaseButton-secondary"],
+    div[data-testid="stButton"] button {
+        font-family: Arial, sans-serif !important;
+        font-weight: bold !important;
+        font-size: 14pt !important;
+        text-transform: capitalize !important;
+        letter-spacing: 0 !important;
+        height: 53px !important;
+        padding: 0 40px !important;
+        border-radius: 6px !important;
+        border: none !important;
+        background-color: var(--button-primary-bg) !important;
+        color: white !important;
+        transition: background-color 0.3s ease !important;
+    }
+    
+    /* Button text content styling */
+    .stButton button p,
+    .stButton button div,
+    .stButton button span,
+    button[data-testid="stBaseButton-primary"] p,
+    button[data-testid="stBaseButton-primary"] div,
+    button[data-testid="stBaseButton-primary"] span,
+    div[data-testid="stButton"] button p,
+    div[data-testid="stButton"] button div,
+    div[data-testid="stButton"] button span {
+        font-family: Arial, sans-serif !important;
+        font-weight: bold !important;
+        font-size: 14pt !important;
+        text-transform: capitalize !important;
+        letter-spacing: 0 !important;
+        color: white !important;
+        margin: 0 !important;
+    }
+    
+    .stButton button:hover,
+    button[data-testid="stBaseButton-primary"]:hover,
+    div[data-testid="stButton"] button:hover {
+        background-color: var(--button-primary-hover) !important;
+        color: white !important;
+    }
+    
+    .stButton button:hover p,
+    .stButton button:hover div,
+    .stButton button:hover span,
+    button[data-testid="stBaseButton-primary"]:hover p,
+    button[data-testid="stBaseButton-primary"]:hover div,
+    button[data-testid="stBaseButton-primary"]:hover span {
+        color: white !important;
+    }
+    
+    /* COMPREHENSIVE FORM LABEL STYLING - Desktop */
+    /* Target the actual Streamlit label structure based on DevTools inspection */
+    
+    /* Main label targeting - based on your DevTools screenshot */
+    div[data-testid="stMarkdownContainer"] p,
+    div[data-testid="stMarkdownContainer"] > p,
+    .stTimeInput label,
+    label[data-testid="stWidgetLabel"] {
+        font-family: var(--secondary-font) !important;
+        font-weight: 400 !important;
+        font-size: 18px !important;
+        line-height: 28px !important;
+        color: var(--primary-color) !important;
+        margin-bottom: 8px !important;
+        margin-top: 8px !important;
+    }
+    
+    /* Additional fallback selectors */
+    .element-container label,
+    .stWidget label,
+    .element-container p {
+        font-family: var(--secondary-font) !important;
+        font-weight: 400 !important;
+        font-size: 18px !important;
+        line-height: 28px !important;
+        color: var(--primary-color) !important;
+    }
+    
+    /* Checkbox alignment and spacing */
+    .stCheckbox > label {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        font-family: var(--secondary-font) !important;
+        font-weight: 400 !important;
+        font-size: 18px !important;
+        line-height: 28px !important;
+        color: var(--primary-color) !important;
+        margin: 0 !important;
+        cursor: pointer !important;
+    }
+
+    /* Info box styling - full width and proper alignment */
+    .stInfo,
+    div[data-testid="stAlert"] {
+        font-family: var(--secondary-font) !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        width: 100% !important;
+        margin: 0 !important;
+        border-radius: 6px !important;
+    }
+
+    .stInfo > div,
+    div[data-testid="stAlert"] > div {
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        min-height: 48px !important;
+    }
+
+    .stInfo div[data-testid="stMarkdownContainer"],
+    div[data-testid="stAlert"] div[data-testid="stMarkdownContainer"] {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Info box fonts follow company style */
+    .stInfo div[data-testid="stMarkdownContainer"] p,
+    div[data-testid="stAlert"] div[data-testid="stMarkdownContainer"] p {
+        margin: 0 !important;
+        font-family: var(--secondary-font) !important;
+        font-weight: 400 !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        color: var(--primary-color) !important;
+    }
+    
+    /* FONT STYLING FOR INPUT ELEMENTS (keeping fonts, removing visual styling) */
+    
+    /* Text Input - Font only */
+    .stTextInput input {
+        font-family: var(--secondary-font) !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        color: var(--primary-color) !important;
+    }
+
+    /* Text Input Placeholder - Font only */
+    .stTextInput input::placeholder {
+        font-family: var(--secondary-font) !important;
+        font-weight: 400 !important;
+        color: #999999 !important;
+        font-style: italic !important;
+        opacity: 1 !important;
+    }
+
+    /* Text Area - Font only */
+    .stTextArea textarea {
+        font-family: var(--secondary-font) !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        color: var(--primary-color) !important;
+        resize: vertical !important;
+    }
+
+    /* Text Area Placeholder - Font only */
+    .stTextArea textarea::placeholder {
+        font-family: var(--secondary-font) !important;
+        font-weight: 400 !important;
+        color: #999999 !important;
+        font-style: italic !important;
+        opacity: 1 !important;
+    }
+
+    /* Date Input - Simplified approach to fix styling */
+    .stDateInput input {
+        font-family: var(--secondary-font) !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        color: var(--primary-color) !important;
+    }
+
+    /* Number Input - Font only */
+    .stNumberInput input {
+        font-family: var(--secondary-font) !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        color: var(--primary-color) !important;
+    }
+
+    /* Select box - Font only */
+    .stSelectbox select {
+        font-family: var(--secondary-font) !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        color: var(--primary-color) !important;
+    }
+
+    /* Time Input - Comprehensive targeting for all possible selectors */
+    .stTimeInput select,
+    .stTimeInput div select,
+    .stTimeInput div[data-baseweb] select,
+    .stTimeInput div[data-baseweb="select"] select,
+    .stTimeInput div[data-baseweb="select"] div,
+    .stTimeInput div[data-testid] select,
+    div[data-testid="stTimeInput"] select,
+    div[data-testid="stTimeInput"] div select,
+    div[data-testid="stTimeInput"] div[data-baseweb] select,
+    div[data-testid="stTimeInput"] div[data-baseweb="select"] select,
+    div[data-testid="stTimeInput"] div[data-baseweb="select"] div {
+        font-family: var(--secondary-font) !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
+        color: var(--primary-color) !important;
+    }
+
+    /* Time Input Dropdown Options - All possible option selectors */
+    .stTimeInput select option,
+    .stTimeInput div select option,
+    .stTimeInput div[data-baseweb] select option,
+    .stTimeInput div[data-baseweb="select"] select option,
+    .stTimeInput div[data-baseweb="select"] div[role="listbox"] div,
+    .stTimeInput div[data-baseweb="select"] div[role="option"],
+    .stTimeInput div[data-baseweb="select"] div[data-value],
+    div[data-testid="stTimeInput"] select option,
+    div[data-testid="stTimeInput"] div select option,
+    div[data-testid="stTimeInput"] div[data-baseweb] select option,
+    div[data-testid="stTimeInput"] div[data-baseweb="select"] select option,
+    div[data-testid="stTimeInput"] div[data-baseweb="select"] div[role="listbox"] div,
+    div[data-testid="stTimeInput"] div[data-baseweb="select"] div[role="option"],
+    div[data-testid="stTimeInput"] div[data-baseweb="select"] div[data-value],
+    /* Universal dropdown option selectors */
+    div[data-baseweb="select"] div[role="listbox"] div,
+    div[data-baseweb="select"] div[role="option"],
+    div[data-baseweb="popover"] div[role="listbox"] div,
+    div[data-baseweb="popover"] div[role="option"] {
+        font-family: var(--secondary-font) !important;
+        font-size: 16px !important;
+        color: var(--primary-color) !important;
+    }
+    
+    /* Mobile Responsive Styles */
     @media (max-width: 768px) {
         .main .block-container {
             padding-left: 1rem;
             padding-right: 1rem;
         }
         
-        .stButton button {
-            width: 100%;
-            height: 3rem;
-            font-size: 16px;
+        /* Mobile input field font size - Font only */
+        .stTextInput input, 
+        .stSelectbox select, 
+        .stTextArea textarea, 
+        .stDateInput input, 
+        .stNumberInput input,
+        .stTimeInput select {
+            font-size: 16px !important; /* Prevent zoom on iOS */
         }
         
-        .stTextInput input, .stSelectbox select, .stTextArea textarea {
+        /* Mobile Typography */
+        .company-h1 {
+            font-size: 48px;
+            line-height: 53px;
+        }
+        
+        .company-h2 {
+            font-size: 42px;
+            line-height: 47px;
+        }
+        
+        .company-subhead1 {
+            font-size: 22px;
+            line-height: 25px;
+        }
+        
+        .company-subhead2 {
+            font-size: 18px;
+            line-height: 24px;
+        }
+        
+        .company-superhead1 {
+            font-size: 14px;
+            line-height: 20px;
+        }
+        
+        .company-hero-body {
             font-size: 16px;
+            line-height: 28px;
+        }
+        
+        .company-body1 {
+            font-size: 14px;
+            line-height: 20px;
+        }
+        
+        .company-body2 {
+            font-size: 10px;
+            line-height: 17px;
+        }
+        
+        .company-disclaimer {
+            font-size: 11px;
+            line-height: 20px;
+        }
+        
+        .company-isi {
+            font-size: 14px;
+            line-height: 24px;
+        }
+        
+        /* Mobile button adjustments */
+        .stButton button, 
+        .company-btn-large, 
+        .company-btn-medium, 
+        .company-btn-small {
+            width: 100% !important;
+        }
+        
+        /* Mobile form label adjustments */
+        div[data-testid="stMarkdownContainer"] p,
+        div[data-testid="stMarkdownContainer"] > p,
+        .stTimeInput label,
+        label[data-testid="stWidgetLabel"],
+        .element-container label,
+        .stWidget label,
+        .element-container p {
+            font-size: 14px !important;
+            line-height: 20px !important;
+        }
+        
+        /* Mobile checkbox adjustments */
+        .stCheckbox > label > div:last-child {
+            font-size: 14px !important;
+            line-height: 20px !important;
+        }
+        
+        /* Mobile info box adjustments */
+        .stInfo > div,
+        div[data-testid="stAlert"] > div {
+            min-height: 40px !important;
+        }
+
+        .stInfo div[data-testid="stMarkdownContainer"] p,
+        div[data-testid="stAlert"] div[data-testid="stMarkdownContainer"] p {
+            font-size: 14pt !important;
+            line-height: 20px !important;
         }
     }
     
     /* Hide sidebar completely */
-    .css-1d391kg {
-        display: none;
+    .css-1d391kg,
+    section[data-testid="stSidebar"] {
+        display: none !important;
+    }
+    
+    /* Success/Warning/Error messages with company fonts */
+    .stSuccess, 
+    .stWarning, 
+    .stError,
+    div[data-testid="stAlert"][data-baseweb="notification"] {
+        font-family: var(--secondary-font) !important;
+        font-size: 16px !important;
+        line-height: 24px !important;
     }
     </style>
-    """, unsafe_allow_html=True)
-    
-    # Header with logo and title in same line
-    if os.path.exists("BI-Logo.png"):
-        # Encode logo to base64 for HTML embedding
-        with open("BI-Logo.png", "rb") as f:
-            logo_bytes = f.read()
-            logo_b64 = base64.b64encode(logo_bytes).decode()
-            logo_data_url = f"data:image/png;base64,{logo_b64}"
-        
-        st.markdown(f"""
-        <div style='display: flex; align-items: center; margin-bottom: 10px; height: 90px;'>
-            <img src="{logo_data_url}" style='width: 80px; height: 80px; object-fit: contain; margin-right: 20px;'>
-            <div style='flex: 1; text-align: center;'>
-                <h5 style='margin: 0; font-weight: bold; color: #333; font-size: 15px; background-color: #f8f9fa; padding: 15px; border-radius: 8px;'>🐾 Pet Reminder - NexGard SPECTRA 🐾</h5>
-            </div>
-            <div style='width: 80px;'></div>
-        </div>
-        """, unsafe_allow_html=True)
-    else:
-        st.markdown("""
-        <div style='display: flex; align-items: center; margin-bottom: 10px; height: 90px;'>
-            <div style='width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 10px; font-size: 35px; margin-right: 20px;'>🐾</div>
-            <div style='flex: 1; text-align: center;'>
-                <h5 style='margin: 0; font-weight: bold; color: #333;'>🐾 Pet Reminder - NexGard SPECTRA 🐾</h5>
-            </div>
-            <div style='width: 80px;'></div>
-        </div>
-        """, unsafe_allow_html=True)
-        
-    st.text("") 
+    """
 
-    # Main form
-    st.markdown("<h6 style='text-align: left; font-weight: bold;'>📋 Reminder Details</h6>", unsafe_allow_html=True)
+def apply_company_styles():
+    """Apply the company style guide to the Streamlit app"""
+    st.markdown(get_company_styles(), unsafe_allow_html=True)
+
+def company_heading(text, level="h1", custom_class=None):
+    """
+    Create a company-styled heading
     
-    # Use session state values as defaults to maintain form data
+    Args:
+        text: The heading text
+        level: h1, h2, subhead1, subhead2, superhead1, hero-body, body1, body2, disclaimer, isi
+        custom_class: Additional CSS classes
+    """
+    class_name = f"company-{level.replace('_', '-')}"
+    if custom_class:
+        class_name += f" {custom_class}"
+    
+    if level in ["h1", "h2"]:
+        tag = level
+    else:
+        tag = "div"
+    
+    return f'<{tag} class="{class_name}">{text}</{tag}>'
+
+def company_button_html(text, button_type="primary", size="large", onclick=None, custom_class=None):
+    """
+    Create a company-styled HTML button
+    
+    Args:
+        text: Button text
+        button_type: primary or secondary
+        size: large, medium, or small
+        onclick: JavaScript onclick handler
+        custom_class: Additional CSS classes
+    """
+    classes = f"company-btn-{size} company-btn-{button_type}"
+    if custom_class:
+        classes += f" {custom_class}"
+    
+    onclick_attr = f'onclick="{onclick}"' if onclick else ""
+    
+    return f'<button class="{classes}" {onclick_attr}>{text}</button>'
+
+def company_text_link(text, url=None, has_chevron=False, onclick=None):
+    """
+    Create a company-styled text link
+    
+    Args:
+        text: Link text
+        url: URL for the link
+        has_chevron: Whether to add chevron spacing
+        onclick: JavaScript onclick handler
+    """
+    chevron_class = "company-text-link-chevron" if has_chevron else ""
+    classes = f"company-text-link {chevron_class}".strip()
+    
+    if url:
+        return f'<a href="{url}" class="{classes}">{text}</a>'
+    elif onclick:
+        return f'<a class="{classes}" onclick="{onclick}" style="cursor: pointer;">{text}</a>'
+    else:
+        return f'<span class="{classes}">{text}</span>'
+
+def main():
+    # Apply company styles first
+    apply_company_styles()
+    
+    # Initialize session state
+    init_session_state()
+    
+    st.text("")  # Spacing
+
+    # Main form section
+    st.markdown(company_heading('📋 Reminder Details', 'subhead2'), unsafe_allow_html=True)
+    
+    # Pet Name Input - The labels should now be styled automatically
     pet_name = st.text_input(
         "Pet Name", 
         placeholder="e.g., Daisy, Luna, Charlie",
@@ -1114,7 +1824,7 @@ def main():
     product_name = "NexGard SPECTRA"
     
     # Date Range Selection
-    st.markdown("**📅 Reminder Period**")
+    st.markdown(company_heading('📅 Reminder Period', 'body1'), unsafe_allow_html=True)
     col_start, col_end = st.columns(2)
     
     with col_start:
@@ -1129,14 +1839,14 @@ def main():
     with col_end:
         dosage = st.number_input(
             "Number of Dosages",
-            value = get_form_data('dosage', 12),
-            min_value = 12,
-            help = "Number of Capsules you have",
+            value=get_form_data('dosage', 12),
+            min_value=12,
+            help="Number of Capsules you have",
             key="number_of_dosage"
         )
     
     # Multiple Times Per Day with Duration Limits
-    st.markdown("**⏰ Reminder Time (Optional)**")
+    st.markdown(company_heading('⏰ Reminder Time (Optional)', 'body1'), unsafe_allow_html=True)
     
     # Get saved selected times or use empty list
     saved_times = get_form_data('selected_time', [])
@@ -1147,14 +1857,13 @@ def main():
 
     use_custom_time = st.checkbox("🕐 Custom Time", key="custom", value=custom_checked)
 
-    default_time = default_time = datetime.strptime("12:00", "%H:%M").time()
+    default_time = datetime.strptime("12:00", "%H:%M").time()
 
     # Determine the reminder time
     if use_custom_time:
         custom_time = st.time_input("Select custom time", value=default_time, key="custom_time")
         selected_time = custom_time.strftime("%H:%M")
     else:
-        # selected_time = default_time.strftime("%H:%M")
         selected_time = ''
 
     notes = st.text_area(
@@ -1164,58 +1873,44 @@ def main():
         key="notes_input"
     )
     
+    # Info display using company styling
     if selected_time == '':
-        st.info(f"📅 Reminder Frequency: **Monthly**")
+        info_text = '📅 Reminder Frequency: **Monthly**'
     else:
-        st.info(f"📅 Reminder Frequency: **Monthly** \t\t 🕛 Reminder time: **{selected_time}**")
+        info_text = f'📅 Reminder Frequency: **Monthly** \t\t 🕛 Reminder time: **{selected_time}**'
     
-    # Save form data and generate button
-    if st.button("🔄 Submit", type="primary", key="submit_btn"):
-        if pet_name:
-            # Save form data to session state
-            save_form_data(pet_name, product_name, start_date, dosage, selected_time, notes)
-            
-            with st.spinner("Submitting ...."):
-                success = generate_content(pet_name, product_name, start_date, dosage, selected_time, notes)
-                if success:
-                    st.success("✅ Calendar reminder generated successfully!  \n🔀 **Redirecting to Validation Page...**")
-                    web_page_url = st.session_state.generated_content.get("web_page_url")
-                    st.markdown(f"""
-                        <meta http-equiv="refresh" content="2;url={web_page_url}">
-                            """,  
-                            unsafe_allow_html=True)
-                    
-                    # Method 2: Show a redirection html block
-                    
-                    # st.markdown(f"""
-                    #     <meta http-equiv="refresh" content="2;url={web_page_url}">
-                    #     <div style="text-align:center; padding: 50px; background-color: #f0f8f0; border-radius: 10px; margin: 20px 0;">
-                    #         <h2 style="color: #28a745;"> Redirecting to validation page... </h2>
-                    #         <div style="margin: 30px 0;">
-                    #             <div style="display: inline-block; width: 30px; height: 30px; border: 3px solid #28a745; border-top: 3px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                    #         </div>
-                    #         <style>
-                    #             @keyframes spin {{
-                    #                 0% {{ transofrm: roatate(0deg); }}
-                    #                 100% {{ ransform: rotate(360deg); }}
-                    #             }}
-                    #         </style>
-                    #         """,  
-                    #         unsafe_allow_html=True)
-                    # st.session_state['redirect'] = True
-                    
-                    st.rerun()
-        else:
-            st.warning("⚠️ Please fill in Pet Name")
+    st.info(info_text)
     
-    # Add a "Clear Form" button to reset everything
-    if st.button("🗑️ Clear Form", key="clear_btn"):
-        # Clear session state
-        st.session_state.form_data = {}
-        st.session_state.generated_content = None
-        st.session_state.content_generated = False
-        st.rerun()
+    # Buttons with company styling
+    col1, col2 = st.columns([4, 1])
     
+    with col1:
+        if st.button("Submit", type="primary", key="submit_btn"):
+            if pet_name:
+                # Save form data to session state
+                save_form_data(pet_name, product_name, start_date, dosage, selected_time, notes)
+                
+                with st.spinner("Submitting ...."):
+                    success = generate_content(pet_name, product_name, start_date, dosage, selected_time, notes)
+                    if success:
+                        st.success("✅ Calendar reminder generated successfully!  \n🔀 **Redirecting to Validation Page...**")
+                        web_page_url = st.session_state.generated_content.get("web_page_url")
+                        st.markdown(f"""
+                            <meta http-equiv="refresh" content="2;url={web_page_url}">
+                                """,  
+                                unsafe_allow_html=True)
+                        st.rerun()
+            else:
+                st.warning("⚠️ Please fill in Pet Name")
+    
+    with col2:
+        if st.button("Clear", key="clear_btn"):
+            # Clear session state
+            st.session_state.form_data = {}
+            st.session_state.generated_content = None
+            st.session_state.content_generated = False
+            st.rerun()
+
 	    
 if __name__ == "__main__":
     main()
