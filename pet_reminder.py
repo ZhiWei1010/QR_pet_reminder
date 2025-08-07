@@ -307,9 +307,9 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
     """Create HTML page that serves calendar with device detection"""
     # Base64 encode the web page specific logo
     logo_data_url = ""
-    if os.path.exists("BI-Logo-2.png"):
+    if os.path.exists("Boehringer_Logo_RGB_Black.png"):
         try:
-            with open("BI-Logo-2.png", "rb") as f:
+            with open("Boehringer_Logo_RGB_Black.png", "rb") as f:
                 logo_bytes = f.read()
                 logo_b64 = base64.b64encode(logo_bytes).decode()
                 logo_data_url = f"data:image/png;base64,{logo_b64}"
@@ -322,9 +322,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         times_html_list += f"• {reminder_details['times']}<br>"
         times_html_list = times_html_list.rstrip('<br>')
     
-    
     qr_base64 = base64.b64encode(qr_image_bytes).decode()
-
 
     html_content = f"""
 <!DOCTYPE html>
@@ -333,7 +331,26 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🐾 {pet_name.upper()} - Medication Reminder</title>
+    
+    <!-- Import Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    
     <style>
+        /* CSS Variables for consistent company styling */
+        :root {{
+            --primary-font: Arial, sans-serif;
+            --secondary-font: 'Open Sans', sans-serif;
+            --primary-color: #333333;
+            --button-primary-bg: #262C65;
+            --button-primary-hover: #0055aa;
+            --button-secondary-bg: #6c757d;
+            --button-secondary-hover: #545b62;
+            --background-color: #ffffff;
+            --card-background: #f8f9fa;
+            --border-color: #e9ecef;
+            --accent-color: #262C65;
+        }}
+        
         * {{
             margin: 0;
             padding: 0;
@@ -341,26 +358,26 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         }}
         
         body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--secondary-font);
             margin: 0;
             padding: 20px;
-            background: #08312a;
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ffffff;
+            color: var(--primary-color);
         }}
         
         .container {{
-            background: linear-gradient(135deg, #0a3d33, #08312a);
-            border: 2px solid #00e47c;
+            background: #ffffff;
+            border: 2px solid var(--border-color);
             border-radius: 20px;
             padding: 30px;
             max-width: 420px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }}
         
         .header {{
@@ -384,28 +401,35 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         
         .logo-fallback {{
             font-size: 40px;
-            color: #00e47c;
+            color: var(--accent-color);
         }}
         
+        /* Company Typography - H1 for pet name */
         .pet-name {{
-            font-size: 32px;
+            font-family: var(--primary-font);
             font-weight: bold;
-            color: #00e47c;
+            font-size: 60px;
+            line-height: 67px;
+            color: var(--accent-color);
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 2px;
         }}
         
+        /* Company Typography - Hero Body for medication */
         .medication {{
-            font-size: 20px;
-            color: #ffffff;
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 22px;
+            line-height: 36px;
+            color: var(--primary-color);
             margin-bottom: 25px;
             opacity: 0.9;
         }}
         
         .details {{
-            background: rgba(0, 228, 124, 0.1);
-            border: 1px solid #00e47c;
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 25px;
@@ -419,126 +443,166 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             font-size: 15px;
         }}
         
+        /* Company Typography - Superhead1 for detail labels */
         .detail-label {{
-            color: #00e47c;
+            font-family: var(--secondary-font);
             font-weight: 600;
+            font-size: 18px;
+            line-height: 28px;
+            color: var(--accent-color);
         }}
         
+        /* Company Typography - Body1 for detail values */
         .detail-value {{
-            color: #ffffff;
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 28px;
+            color: var(--primary-color);
             flex: 1;
             text-align: right;
         }}
         
         .times-section {{
-            background: rgba(0, 228, 124, 0.05);
-            border: 1px dashed #00e47c;
+            background: rgba(38, 44, 101, 0.05);
+            border: 1px dashed var(--accent-color);
             border-radius: 10px;
             padding: 15px;
             margin-top: 15px;
             text-align: left;
         }}
         
+        /* Company Typography - Superhead1 for times title */
         .times-title {{
-            color: #00e47c;
+            font-family: var(--secondary-font);
             font-weight: 600;
+            font-size: 18px;
+            line-height: 28px;
+            color: var(--accent-color);
             margin-bottom: 8px;
-            font-size: 14px;
         }}
         
+        /* Company Typography - Body2 for times list */
         .times-list {{
-            color: #ffffff;
-            font-size: 14px;
-            line-height: 1.6;
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            color: var(--primary-color);
         }}
         
         .notes-section {{
-            background: rgba(0, 228, 124, 0.05);
-            border: 1px dashed #00e47c;
+            background: rgba(38, 44, 101, 0.05);
+            border: 1px dashed var(--accent-color);
             border-radius: 10px;
             padding: 15px;
             margin-top: 15px;
             text-align: left;
         }}
         
+        /* Company Typography - Superhead1 for notes title */
         .notes-title {{
-            color: #00e47c;
+            font-family: var(--secondary-font);
             font-weight: 600;
+            font-size: 18px;
+            line-height: 28px;
+            color: var(--accent-color);
             margin-bottom: 8px;
-            font-size: 14px;
         }}
         
+        /* Company Typography - Body2 for notes text */
         .notes-text {{
-            color: #ffffff;
-            font-size: 14px;
-            line-height: 1.4;
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 16px;
+            line-height: 24px;
+            color: var(--primary-color);
             opacity: 0.9;
         }}
         
+        /* Company Button Styles */
         .btn {{
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 100%;
-            padding: 18px;
+            padding: 0;
             margin: 15px 0;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            box-sizing: border-box;
         }}
         
         .btn:hover {{
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 228, 124, 0.3);
+            box-shadow: 0 8px 20px rgba(38, 44, 101, 0.3);
         }}
         
         .btn-primary {{
-            background: linear-gradient(45deg, #00e47c, #00b85c);
-            color: #08312a;
-            font-weight: 700;
+            font-family: var(--primary-font) !important;
+            font-weight: bold !important;
+            font-size: 14pt !important;
+            text-transform: capitalize !important;
+            letter-spacing: 0 !important;
+            height: 53px !important;
+            border-radius: 6px !important;
+            background: var(--accent-color) !important;
+            color: #ffffff !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            line-height: 1 !important;
         }}
         
         .instructions {{
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--card-background);
             border-radius: 10px;
             padding: 20px;
             margin-top: 20px;
-            font-size: 14px;
-            color: #ffffff;
+            color: var(--primary-color);
             line-height: 1.5;
         }}
         
+        /* Company Typography - Body2 for instructions title */
         .instructions-title {{
-            color: #00e47c;
+            font-family: var(--secondary-font);
             font-weight: 600;
-            margin-bottom: 10px;
             font-size: 16px;
+            line-height: 24px;
+            color: var(--accent-color);
+            margin-bottom: 10px;
         }}
         
         .device-specific {{
             margin-top: 15px;
             padding: 15px;
-            background: rgba(0, 228, 124, 0.1);
+            background: rgba(38, 44, 101, 0.05);
             border-radius: 8px;
-            border-left: 4px solid #00e47c;
+            border-left: 4px solid var(--accent-color);
         }}
 
-        /* QR Code section - Simplified for mobile */
+        /* QR Code section - Desktop Only */
         .qr-section {{
-            background-color: #f8f9fa;
+            background-color: var(--card-background);
             padding: 20px;
             text-align: center;
-            border: 3px solid #00e47c;
+            border: 3px solid var(--accent-color);
+            display: block;
         }}
         
+        /* Company Typography - Subhead2 for QR title */
         .qr-title {{
-            color: #08312a;
-            font-size: 20px;
+            font-family: var(--primary-font);
             font-weight: bold;
+            font-size: 22px;
+            line-height: 28px;
+            color: var(--accent-color);
             margin-bottom: 15px;
         }}
 
@@ -547,28 +611,34 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             height: 200px;
             margin: 10px auto;
             background-color: #ffffff;
-            border: 2px solid #00e47c;
+            border: 2px solid var(--accent-color);
             padding: 10px;
             display: block;
         }}
 
-         .qr-instructions {{
-            color: #08312a;
+        /* Company Typography - Body2 for QR instructions */
+        .qr-instructions {{
+            font-family: var(--secondary-font);
+            font-weight: 400;
             font-size: 16px;
-            font-weight: bold;
+            line-height: 24px;
+            color: var(--primary-color);
             margin: 15px 0 10px 0;
         }}
         
         .qr-link {{
-            color: #08312a;
+            color: var(--primary-color);
             margin: 10px 0;
         }}
         
         .qr-link a {{
-            color: #007bff;
-            text-decoration: underline;
+            font-family: var(--primary-font);
             font-weight: bold;
             font-size: 14px;
+            text-transform: capitalize;
+            letter-spacing: 0;
+            color: var(--button-primary-bg);
+            text-decoration: underline;
         }}
         
         .scan-tip {{
@@ -578,7 +648,14 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             margin: 15px 0;
             border-radius: 5px;
             color: #856404;
-            font-size: 13px;
+        }}
+        
+        /* Company Typography - Disclaimer for scan tip */
+        .scan-tip {{
+            font-family: var(--secondary-font);
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 24px;
         }}
         
         @media (max-width: 480px) {{
@@ -590,12 +667,62 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 padding: 25px 20px;
             }}
             
+            /* Hide QR code section on mobile */
+            .qr-section {{
+                display: none !important;
+            }}
+            
+            /* Mobile Typography Adjustments */
             .pet-name {{
-                font-size: 26px;
+                font-size: 48px;
+                line-height: 53px;
             }}
             
             .medication {{
+                font-size: 16px;
+                line-height: 28px;
+            }}
+            
+            .detail-label {{
+                font-size: 14px;
+                line-height: 20px;
+            }}
+            
+            .detail-value {{
+                font-size: 14px;
+                line-height: 20px;
+            }}
+            
+            .times-title,
+            .notes-title {{
+                font-size: 14px;
+                line-height: 20px;
+            }}
+            
+            .times-list,
+            .notes-text {{
+                font-size: 10px;
+                line-height: 17px;
+            }}
+            
+            .qr-title {{
                 font-size: 18px;
+                line-height: 24px;
+            }}
+            
+            .qr-instructions {{
+                font-size: 10px;
+                line-height: 17px;
+            }}
+            
+            .instructions-title {{
+                font-size: 10px;
+                line-height: 17px;
+            }}
+            
+            .scan-tip {{
+                font-size: 11px;
+                line-height: 20px;
             }}
             
             .btn {{
@@ -611,6 +738,13 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             .logo-img {{
                 max-width: 80px;
                 max-height: 80px;
+            }}
+        }}
+        
+        /* Media query for tablets and larger screens - Show QR code */
+        @media (min-width: 481px) {{
+            .qr-section {{
+                display: block !important;
             }}
         }}
     </style>
@@ -665,15 +799,12 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
 
         <!-- QR Code Section -->
         <div class="qr-section">
-            <div class="qr-title">📱 Scan QR Code</div>
+            <div class="qr-title">📱 Scan QR Code to add to Mobile Calendar!</div>
             <div style="text-align: center; margin: 15px 0;">
                 <img src="data:image/png;base64,{qr_base64}"
                     alt="QR Code for Pet Reminder"
                     class="qr-image"
-                    style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #00e47c; padding: 10px; background-color: white;" />
-            </div>
-            <div class="qr-link">
-                Can't scan? <a href="{calendar_url}">Click here instead</a>
+                    style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
             </div>
         </div>
     </div>
@@ -705,7 +836,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                         
                         setTimeout(function() {{
                             downloadBtn.innerHTML = '📅 Add to My Calendar';
-                            downloadBtn.style.background = 'linear-gradient(45deg, #00e47c, #00b85c)';
+                            downloadBtn.style.background = 'var(--accent-color)';
                         }}, 2000);
                     }}, 500);
                 }});
@@ -753,7 +884,7 @@ def generate_qr_code(web_page_url):
     qr.make(fit=True)
     
     # Create QR code with green background
-    qr_img = qr.make_image(fill_color="black", back_color="#00e47c")
+    qr_img = qr.make_image(fill_color="black", back_color="#009FDF")
     
     img_buffer = io.BytesIO()
     qr_img.save(img_buffer, format='PNG')
@@ -982,16 +1113,22 @@ def generate_content(pet_name, product_name, start_date, dosage, selected_time, 
             'times': selected_time,
             'notes': notes
         }
-        # Generate QR code (use a fallback URL if web page not available)
-        qr_target = calendar_url if calendar_url else f"data:text/plain,{pet_name} - {product_name} Reminder"
-        qr_image_bytes = generate_qr_code(qr_target)
+        
 
         # Create web page (may be None if S3 not configured)
         web_page_url = None
         if calendar_url:
+            qr_image_bytes_placeholder = generate_qr_code("placeholder")
+            html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes_placeholder)
+            web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
+            
+            # Generate QR code (use a fallback URL if web page not available)
+            qr_target = web_page_url if web_page_url else f"data:text/plain,{pet_name} - {product_name} Reminder"
+            qr_image_bytes = generate_qr_code(qr_target)
+
             html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes)
             web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
-        
+            
         # Generate the combined reminder image
         reminder_image = create_reminder_image(pet_name, product_name, reminder_details, qr_image_bytes)
         
@@ -1023,7 +1160,6 @@ def generate_content(pet_name, product_name, start_date, dosage, selected_time, 
     except Exception as e:
         st.error(f"Error generating content: {str(e)}")
         return False
-
 
 def get_company_styles():
     """
