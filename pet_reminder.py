@@ -323,7 +323,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         times_html_list = times_html_list.rstrip('<br>')
     
     qr_base64 = base64.b64encode(qr_image_bytes).decode()
-
+    form_url = "https://ah-pet-reminder.streamlit.app"
     html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -796,6 +796,11 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         <a href="{calendar_url}" class="btn btn-primary" download="{pet_name.upper()}_{product_name}_reminder.ics">
             📅 Add to My Calendar
         </a>
+        
+        <!-- Back to Form Button -->
+        <button onclick="window.history.back();" class="btn btn-primary" style="margin-top: 10px;">
+            🔙 Back to Form
+        </button>
 
         <!-- QR Code Section -->
         <div class="qr-section">
@@ -1880,7 +1885,7 @@ def main():
         info_text = f'📅 Reminder Frequency: **Monthly** \t\t 🕛 Reminder time: **{selected_time}**'
     
     st.info(info_text)
-    
+
     # Buttons with company styling
     col1, col2 = st.columns([4, 1])
     
@@ -1891,6 +1896,38 @@ def main():
                 save_form_data(pet_name, product_name, start_date, dosage, selected_time, notes)
                 
                 with st.spinner("Submitting ...."):
+                    # Show full-screen spinner overlay
+                    st.markdown('''
+                    <style>
+                    .fullscreen-spinner {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background-color: rgba(128, 128, 128, 0.6);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    }
+                    .spinner-circle {
+                    border: 8px solid #f3f3f3;
+                    border-top: 8px solid #444;
+                    border-radius: 50%;
+                    width: 60px;
+                    height: 60px;
+                    animation: spin 1s linear infinite;
+                    }
+                    @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                    }
+                    </style>
+                    <div class="fullscreen-spinner">
+                    <div class="spinner-circle"></div>
+                    </div>
+                    ''', unsafe_allow_html=True)
                     success = generate_content(pet_name, product_name, start_date, dosage, selected_time, notes)
                     if success:
                         st.success("✅ Calendar reminder generated successfully!  \n🔀 **Redirecting to Validation Page...**")
@@ -1899,7 +1936,6 @@ def main():
                             <meta http-equiv="refresh" content="2;url={web_page_url}">
                                 """,  
                                 unsafe_allow_html=True)
-                        st.rerun()
             else:
                 st.warning("⚠️ Please fill in Pet Name")
     
