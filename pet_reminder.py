@@ -536,6 +536,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             text-transform: uppercase;
             letter-spacing: 0.5px;
             box-sizing: border-box;
+            padding: 0 40px !important;
         }}
         
         .btn:hover {{
@@ -558,6 +559,34 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             justify-content: center !important;
             text-align: center !important;
             line-height: 1 !important;
+            padding: 0 40px !important;
+        }}
+
+        .btn-primary:hover {{
+            background-color: #0055aa !important;
+            color: white !important;
+            border: 2px solid #0055aa !important;
+        }}
+
+        .btn-secondary {{
+            font-family: var(--primary-font) !important;
+            font-weight: bold !important;
+            font-size: 14pt !important;
+            text-transform: capitalize !important;
+            letter-spacing: 0 !important;
+            height: 53px !important;
+            border-radius: 6px !important;
+            background: var(--accent-color) !important;
+            color: #ffffff !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            line-height: 1 !important;
+            background-color: transparent !important;
+            color: #262C65 !important;
+            border: 2px solid #0055aa !important;   
+            padding: 0 40px !important;
         }}
         
         .instructions {{
@@ -726,8 +755,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             }}
             
             .btn {{
-                padding: 16px;
-                font-size: 15px;
+                padding: 0 40px !important;
             }}
             
             .logo-container {{
@@ -802,8 +830,13 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             🔙 Back to Form
         </button>
 
-        <!-- QR Code Section -->
-        <div class="qr-section">
+        <!-- Toggle QR Code Button -->
+        <button id="toggleQRBtn" onclick="toggleQR()" class="btn btn-secondary" style="margin-top: 10px;">
+            📴 Hide QR Code ▲
+        </button>
+
+        <!-- QR Code Section (initially hidden with animation) -->
+        <div id="qrContainer" style="; overflow: hidden; transition: all 0.5s ease;">
             <div class="qr-title">📱 Scan QR Code to add to Mobile Calendar!</div>
             <div style="text-align: center; margin: 15px 0;">
                 <img src="data:image/png;base64,{qr_base64}"
@@ -812,9 +845,22 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                     style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
             </div>
         </div>
-    </div>
+
 
     <script>
+        function toggleQR() {{
+            var qrDiv = document.getElementById("qrContainer");
+            var btn = document.getElementById("toggleQRBtn");
+            if (qrDiv.style.display === "none") {{
+                qrDiv.style.display = "block";
+                btn.innerHTML = "📴 Hide QR Code ▲";
+            }} else {{
+                qrDiv.style.display = "none";
+                btn.innerHTML = "📱 Show QR Code ▼";
+            }}
+        }}
+
+
         // Device detection and instructions
         function showDeviceInstructions() {{
             const userAgent = navigator.userAgent;
@@ -1302,6 +1348,7 @@ def get_company_styles():
         justify-content: center !important;
         text-decoration: none !important;
         transition: background-color 0.3s ease !important;
+        padding: 0 40px !important;
     }
     
     .company-btn-medium {
@@ -1320,6 +1367,7 @@ def get_company_styles():
         justify-content: center !important;
         text-decoration: none !important;
         transition: background-color 0.3s ease !important;
+        padding: 0 40px !important;
     }
     
     .company-btn-small {
@@ -1338,11 +1386,13 @@ def get_company_styles():
         justify-content: center !important;
         text-decoration: none !important;
         transition: background-color 0.3s ease !important;
+        padding: 0 40px !important;
     }
     
     .company-btn-primary {
         background-color: #262C65 !important;
         color: white !important;
+        padding: 0 40px !important;
     }
     
     .company-btn-primary:hover {
@@ -1351,13 +1401,10 @@ def get_company_styles():
     }
     
     .company-btn-secondary {
-        background-color: var(--button-secondary-bg) !important;
-        color: white !important;
-    }
-    
-    .company-btn-secondary:hover {
-        background-color: var(--button-secondary-hover) !important;
-        color: white !important;
+        background-color: transparent !important;
+        color: #262C65 !important;
+        border: 2px solid #0055aa !important;
+        padding: 0 40px !important;
     }
     
     /* Text Links - Fixed font specifications */
