@@ -323,7 +323,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         times_html_list = times_html_list.rstrip('<br>')
     
     qr_base64 = base64.b64encode(qr_image_bytes).decode()
-
+    form_url = "https://ah-pet-reminder.streamlit.app"
     html_content = f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -536,6 +536,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             text-transform: uppercase;
             letter-spacing: 0.5px;
             box-sizing: border-box;
+            padding: 0 40px !important;
         }}
         
         .btn:hover {{
@@ -558,6 +559,34 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             justify-content: center !important;
             text-align: center !important;
             line-height: 1 !important;
+            padding: 0 40px !important;
+        }}
+
+        .btn-primary:hover {{
+            background-color: #0055aa !important;
+            color: white !important;
+            border: 2px solid #0055aa !important;
+        }}
+
+        .btn-secondary {{
+            font-family: var(--primary-font) !important;
+            font-weight: bold !important;
+            font-size: 14pt !important;
+            text-transform: capitalize !important;
+            letter-spacing: 0 !important;
+            height: 53px !important;
+            border-radius: 6px !important;
+            background: var(--accent-color) !important;
+            color: #ffffff !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            line-height: 1 !important;
+            background-color: transparent !important;
+            color: #262C65 !important;
+            border: 2px solid #0055aa !important;   
+            padding: 0 40px !important;
         }}
         
         .instructions {{
@@ -726,8 +755,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             }}
             
             .btn {{
-                padding: 16px;
-                font-size: 15px;
+                padding: 0 40px !important;
             }}
             
             .logo-container {{
@@ -796,9 +824,19 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         <a href="{calendar_url}" class="btn btn-primary" download="{pet_name.upper()}_{product_name}_reminder.ics">
             📅 Add to My Calendar
         </a>
+        
+        <!-- Back to Form Button -->
+        <button onclick="window.history.back();" class="btn btn-primary" style="margin-top: 10px;">
+            🔙 Back to Form
+        </button>
 
-        <!-- QR Code Section -->
-        <div class="qr-section">
+        <!-- Toggle QR Code Button -->
+        <button id="toggleQRBtn" onclick="toggleQR()" class="btn btn-secondary" style="margin-top: 10px;">
+            📴 Hide QR Code ▲
+        </button>
+
+        <!-- QR Code Section (initially hidden with animation) -->
+        <div id="qrContainer" style="; overflow: hidden; transition: all 0.5s ease;">
             <div class="qr-title">📱 Scan QR Code to add to Mobile Calendar!</div>
             <div style="text-align: center; margin: 15px 0;">
                 <img src="data:image/png;base64,{qr_base64}"
@@ -807,9 +845,22 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                     style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
             </div>
         </div>
-    </div>
+
 
     <script>
+        function toggleQR() {{
+            var qrDiv = document.getElementById("qrContainer");
+            var btn = document.getElementById("toggleQRBtn");
+            if (qrDiv.style.display === "none") {{
+                qrDiv.style.display = "block";
+                btn.innerHTML = "📴 Hide QR Code ▲";
+            }} else {{
+                qrDiv.style.display = "none";
+                btn.innerHTML = "📱 Show QR Code ▼";
+            }}
+        }}
+
+
         // Device detection and instructions
         function showDeviceInstructions() {{
             const userAgent = navigator.userAgent;
@@ -871,7 +922,7 @@ def upload_web_page_to_s3(html_content, page_id):
         st.error(f"Error uploading page to S3: {e}")
         return None
 
-def generate_qr_code(web_page_url):
+def generate_qr_code(web_page_url, logo_path):
     """Generate QR code that points to the web page"""
     qr = qrcode.QRCode(
         version=2,
@@ -884,7 +935,17 @@ def generate_qr_code(web_page_url):
     qr.make(fit=True)
     
     # Create QR code with green background
-    qr_img = qr.make_image(fill_color="black", back_color="#009FDF")
+    qr_img = qr.make_image(fill_color="black", back_color="#009FDF").convert("RGB")
+
+    logo = Image.open(logo_path)
+    qr_width, qr_height = qr_img.size
+    logo_size = int(qr_width * 0.2)
+    logo = logo.resize((logo_size, logo_size), resample=Image.Resampling.LANCZOS)
+
+    
+    pos = ((qr_width - logo_size) // 2, (qr_height - logo_size) // 2)
+    qr_img.paste(logo, pos, mask=logo if logo.mode == 'RGBA' else None)
+
     
     img_buffer = io.BytesIO()
     qr_img.save(img_buffer, format='PNG')
@@ -1117,14 +1178,16 @@ def generate_content(pet_name, product_name, start_date, dosage, selected_time, 
 
         # Create web page (may be None if S3 not configured)
         web_page_url = None
+
+        logo_path = "./nex-black.png"
         if calendar_url:
-            qr_image_bytes_placeholder = generate_qr_code("placeholder")
+            qr_image_bytes_placeholder = generate_qr_code("placeholder", logo_path)
             html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes_placeholder)
             web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
             
             # Generate QR code (use a fallback URL if web page not available)
             qr_target = web_page_url if web_page_url else f"data:text/plain,{pet_name} - {product_name} Reminder"
-            qr_image_bytes = generate_qr_code(qr_target)
+            qr_image_bytes = generate_qr_code(qr_target, logo_path)
 
             html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes)
             web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
@@ -1297,6 +1360,7 @@ def get_company_styles():
         justify-content: center !important;
         text-decoration: none !important;
         transition: background-color 0.3s ease !important;
+        padding: 0 40px !important;
     }
     
     .company-btn-medium {
@@ -1315,6 +1379,7 @@ def get_company_styles():
         justify-content: center !important;
         text-decoration: none !important;
         transition: background-color 0.3s ease !important;
+        padding: 0 40px !important;
     }
     
     .company-btn-small {
@@ -1333,11 +1398,13 @@ def get_company_styles():
         justify-content: center !important;
         text-decoration: none !important;
         transition: background-color 0.3s ease !important;
+        padding: 0 40px !important;
     }
     
     .company-btn-primary {
         background-color: #262C65 !important;
         color: white !important;
+        padding: 0 40px !important;
     }
     
     .company-btn-primary:hover {
@@ -1346,13 +1413,10 @@ def get_company_styles():
     }
     
     .company-btn-secondary {
-        background-color: var(--button-secondary-bg) !important;
-        color: white !important;
-    }
-    
-    .company-btn-secondary:hover {
-        background-color: var(--button-secondary-hover) !important;
-        color: white !important;
+        background-color: transparent !important;
+        color: #262C65 !important;
+        border: 2px solid #0055aa !important;
+        padding: 0 40px !important;
     }
     
     /* Text Links - Fixed font specifications */
@@ -1880,7 +1944,7 @@ def main():
         info_text = f'📅 Reminder Frequency: **Monthly** \t\t 🕛 Reminder time: **{selected_time}**'
     
     st.info(info_text)
-    
+
     # Buttons with company styling
     col1, col2 = st.columns([4, 1])
     
@@ -1891,6 +1955,38 @@ def main():
                 save_form_data(pet_name, product_name, start_date, dosage, selected_time, notes)
                 
                 with st.spinner("Submitting ...."):
+                    # Show full-screen spinner overlay
+                    st.markdown('''
+                    <style>
+                    .fullscreen-spinner {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background-color: rgba(128, 128, 128, 0.6);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    }
+                    .spinner-circle {
+                    border: 8px solid #f3f3f3;
+                    border-top: 8px solid #444;
+                    border-radius: 50%;
+                    width: 60px;
+                    height: 60px;
+                    animation: spin 1s linear infinite;
+                    }
+                    @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                    }
+                    </style>
+                    <div class="fullscreen-spinner">
+                    <div class="spinner-circle"></div>
+                    </div>
+                    ''', unsafe_allow_html=True)
                     success = generate_content(pet_name, product_name, start_date, dosage, selected_time, notes)
                     if success:
                         st.success("✅ Calendar reminder generated successfully!  \n🔀 **Redirecting to Validation Page...**")
@@ -1899,7 +1995,6 @@ def main():
                             <meta http-equiv="refresh" content="2;url={web_page_url}">
                                 """,  
                                 unsafe_allow_html=True)
-                        st.rerun()
             else:
                 st.warning("⚠️ Please fill in Pet Name")
     
