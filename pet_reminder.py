@@ -922,7 +922,7 @@ def upload_web_page_to_s3(html_content, page_id):
         st.error(f"Error uploading page to S3: {e}")
         return None
 
-def generate_qr_code(web_page_url):
+def generate_qr_code(web_page_url, logo_path):
     """Generate QR code that points to the web page"""
     qr = qrcode.QRCode(
         version=2,
@@ -935,7 +935,17 @@ def generate_qr_code(web_page_url):
     qr.make(fit=True)
     
     # Create QR code with green background
-    qr_img = qr.make_image(fill_color="black", back_color="#009FDF")
+    qr_img = qr.make_image(fill_color="black", back_color="#009FDF").convert("RGB")
+
+    logo = Image.open(logo_path)
+    qr_width, qr_height = qr_img.size
+    logo_size = int(qr_width * 0.2)
+    logo = logo.resize((logo_size, logo_size), resample=Image.Resampling.LANCZOS)
+
+    
+    pos = ((qr_width - logo_size) // 2, (qr_height - logo_size) // 2)
+    qr_img.paste(logo, pos, mask=logo if logo.mode == 'RGBA' else None)
+
     
     img_buffer = io.BytesIO()
     qr_img.save(img_buffer, format='PNG')
@@ -1168,14 +1178,16 @@ def generate_content(pet_name, product_name, start_date, dosage, selected_time, 
 
         # Create web page (may be None if S3 not configured)
         web_page_url = None
+
+        logo_path = "./nex-black.png"
         if calendar_url:
-            qr_image_bytes_placeholder = generate_qr_code("placeholder")
+            qr_image_bytes_placeholder = generate_qr_code("placeholder", logo_path)
             html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes_placeholder)
             web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
             
             # Generate QR code (use a fallback URL if web page not available)
             qr_target = web_page_url if web_page_url else f"data:text/plain,{pet_name} - {product_name} Reminder"
-            qr_image_bytes = generate_qr_code(qr_target)
+            qr_image_bytes = generate_qr_code(qr_target, logo_path)
 
             html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes)
             web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
