@@ -380,10 +380,10 @@ def upload_reminder_image_to_s3(image_bytes, file_id):
 def create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes):
     """Create HTML page that serves calendar with device detection"""
     # Base64 encode the web page specific logo
-    logo_data_url = ""
-    if os.path.exists("Boehringer_Logo_RGB_Black.png"):
+    logo_data_url = "./assets/logos/Boehringer_Logo_RGB_Black.png"
+    if os.path.exists(logo_data_url):
         try:
-            with open("Boehringer_Logo_RGB_Black.png", "rb") as f:
+            with open(logo_data_url, "rb") as f:
                 logo_bytes = f.read()
                 logo_b64 = base64.b64encode(logo_bytes).decode()
                 logo_data_url = f"data:image/png;base64,{logo_b64}"
@@ -1250,7 +1250,7 @@ def generate_content(pet_name, product_name, start_date, dosage, selected_time, 
         # Create web page (may be None if S3 not configured)
         web_page_url = None
 
-        logo_path = "./nex-black.png"
+        logo_path = "./assets/logos/NGS_X_blue.jpg"
         if calendar_url:
             qr_image_bytes_placeholder = generate_qr_code("placeholder", logo_path)
             html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes_placeholder)
