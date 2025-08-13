@@ -1898,8 +1898,7 @@ def main():
     
     # Pet Name Input - The labels should now be styled automatically
     pet_name = st.text_input(
-        "Pet Name", 
-        placeholder="e.g., Daisy, Luna, Charlie",
+        "Your Pet's Name*", 
         value=get_form_data('pet_name', ''),
         key="pet_name_input"
     )
@@ -1951,7 +1950,6 @@ def main():
 
     notes = st.text_area(
         "Additional Notes (Optional)", 
-        placeholder="e.g., Give with food, Check for side effects",
         value=get_form_data('notes', ''),
         key="notes_input"
     )
