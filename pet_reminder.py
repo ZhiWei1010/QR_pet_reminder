@@ -1,6 +1,6 @@
 import streamlit as st
 import qrcode
-from icalendar import Calendar, Event, Alarm, vDate
+from icalendar import Calendar, Event, Alarm, vDate, vDatetime
 from datetime import datetime, timedelta, date, time
 import io
 import base64
@@ -13,6 +13,7 @@ import boto3
 import math
 import re
 import uuid
+import pytz
 
 # Configure page with mobile optimization
 st.set_page_config(
@@ -228,38 +229,56 @@ def create_calendar_reminder(pet_name, product_name, dosage, reminder_time, star
     # Create event
     event = Event()
     event_title = f"{pet_name} - {product_name}"
-    
     event.add('summary', event_title)
-    if reminder_time == '':
-        event.add('description', f"NexGard reminver: {product_name}\nPet: {pet_name}\n{notes}")
-    else:
-        event.add('description', f"Nexgard reminder: {product_name}\nPet: {pet_name}\nTime: {reminder_time}\n{notes}")
     
-    if reminder_time == '':
+    mytz = pytz.timezone('Asia/Singapore')
+    
+    if reminder_time == '' or reminder_time is None:
+        # All-day event
+        event.add('description', f"NexGard reminder: {product_name}\nPet: {pet_name}\n{notes}")
         event.add('dtstart', vDate(start_date))
         event.add('dtend', vDate(start_date + timedelta(days=1)))
+        
+        # Create alarm for 12:00 PM on the event date (12 hours after midnight)
+        alarm = Alarm()
+        alarm.add('action', 'DISPLAY')
+        alarm.add('description', f'Time to give {product_name} to {pet_name}!')
+        
+        # Use relative trigger: 12 hours after the start of the all-day event
+        alarm.add('trigger', timedelta(hours=12))
+        alarm['trigger'].params['RELATED'] = 'START'
+        
     else:
+        # Timed event
+        event.add('description', f"NexGard reminder: {product_name}\nPet: {pet_name}\nTime: {reminder_time}\n{notes}")
         start_time = datetime.combine(start_date, datetime.strptime(reminder_time, "%H:%M").time())
+        
+        # Localize the start time to Singapore timezone
+        start_time = mytz.localize(start_time)
+        
         event.add('dtstart', start_time)
         event.add('dtend', start_time + timedelta(hours=1))
+        
+        # Create alarm for 15 minutes before the event
+        alarm = Alarm()
+        alarm.add('action', 'DISPLAY')
+        alarm.add('description', f'Time to give {product_name} to {pet_name}!')
+        alarm.add('trigger', timedelta(minutes=-15))
+
     event.add('dtstamp', datetime.now())
     event.add('uid', str(uuid.uuid4()))
     
     # Add recurrence rule with count limit
     rrule = {}
     rrule['freq'] = 'monthly'
-    
+
     if reminder_count > 0:
         rrule['count'] = reminder_count
     
     event.add('rrule', rrule)
     
-    alarm = Alarm()
-    alarm.add('action', 'DISPLAY')
-    alarm.add('description', f'Time to give {product_name} to {pet_name}!')
-    alarm.add('trigger', timedelta(minutes=-15))  # 15 minutes before
+    # Add the alarm to the event
     event.add_component(alarm)
-    
     cal.add_component(event)
     
     return cal.to_ical().decode('utf-8')
@@ -2005,7 +2024,6 @@ def main():
             st.session_state.generated_content = None
             st.session_state.content_generated = False
             st.rerun()
-
 	    
 if __name__ == "__main__":
     main()
