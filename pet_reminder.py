@@ -2,6 +2,7 @@ import streamlit as st
 import qrcode
 from icalendar import Calendar, Event, Alarm, vDate, vDatetime
 from datetime import datetime, timedelta, date, time
+from dateutil.relativedelta import relativedelta
 import io
 import base64
 from PIL import Image, ImageDraw, ImageFont
@@ -228,21 +229,21 @@ def create_calendar_reminder(pet_name, product_name, dosage, reminder_time, star
 
     # Create event
     event = Event()
-    event_title = f"{pet_name} - {product_name}"
+    event_title = f"Time to give {pet_name} {product_name}!"
     event.add('summary', event_title)
     
     mytz = pytz.timezone('Asia/Singapore')
     
     if reminder_time == '' or reminder_time is None:
         # All-day event
-        event.add('description', f"NexGard reminder: {product_name}\nPet: {pet_name}\n{notes}")
+        event.add('description', f"Dosage reminder: {product_name}\nPet: {pet_name}\n{notes}")
         event.add('dtstart', vDate(start_date))
         event.add('dtend', vDate(start_date + timedelta(days=1)))
         
         # Create alarm for 12:00 PM on the event date (12 hours after midnight)
         alarm = Alarm()
         alarm.add('action', 'DISPLAY')
-        alarm.add('description', f'Time to give {product_name} to {pet_name}!')
+        alarm.add('description', f'Time to give {pet_name} {product_name}')
         
         # Use relative trigger: 12 hours after the start of the all-day event
         alarm.add('trigger', timedelta(hours=12))
@@ -250,7 +251,7 @@ def create_calendar_reminder(pet_name, product_name, dosage, reminder_time, star
         
     else:
         # Timed event
-        event.add('description', f"NexGard reminder: {product_name}\nPet: {pet_name}\nTime: {reminder_time}\n{notes}")
+        event.add('description', f"Dosage reminder: {product_name}\nPet: {pet_name}\nTime: {reminder_time}\n{notes}")
         start_time = datetime.combine(start_date, datetime.strptime(reminder_time, "%H:%M").time())
         
         # Localize the start time to Singapore timezone
@@ -262,7 +263,7 @@ def create_calendar_reminder(pet_name, product_name, dosage, reminder_time, star
         # Create alarm for 15 minutes before the event
         alarm = Alarm()
         alarm.add('action', 'DISPLAY')
-        alarm.add('description', f'Time to give {product_name} to {pet_name}!')
+        alarm.add('description', f'Time to give {pet_name} {product_name}')
         alarm.add('trigger', timedelta(minutes=-15))
 
     event.add('dtstamp', datetime.now())
@@ -276,10 +277,64 @@ def create_calendar_reminder(pet_name, product_name, dosage, reminder_time, star
         rrule['count'] = reminder_count
     
     event.add('rrule', rrule)
-    
+
     # Add the alarm to the event
     event.add_component(alarm)
     cal.add_component(event)
+
+    # Refill Event Reminder
+
+    refill_reminder_date = start_date + relativedelta(months=2)
+        
+    # Create refill event
+    refill_event = Event()
+    refill_event_title = f"Time to refill {pet_name}'s {product_name}"
+    refill_event.add('summary', refill_event_title)
+    
+    refill_description = f"MEDICATION REFILL REMINDER\n\nPet: {pet_name}\nMedication: {product_name}\n\nContinue to keep {pet_name} safe from parasites!"
+    
+    if notes:
+        refill_description += f"\n\nNotes: {notes}"
+        
+    refill_event.add('description', refill_description)
+    
+    if reminder_time == '' or reminder_time is None:
+        # All-day refill reminder
+        refill_event.add('dtstart', vDate(refill_reminder_date))
+        refill_event.add('dtend', vDate(refill_reminder_date + timedelta(days=1)))
+        
+        # Create alarm for 10:00 AM on refill reminder date
+        refill_alarm = Alarm()
+        refill_alarm.add('action', 'DISPLAY')
+        refill_alarm.add('description', f'Time to refill {pet_name}\'s {product_name}!')
+        refill_alarm.add('trigger', timedelta(hours=10))
+        refill_alarm['trigger'].params['RELATED'] = 'START'
+        
+    else:
+        # Timed refill reminder (use same time as medication reminder)
+        refill_start_time = datetime.combine(refill_reminder_date, datetime.strptime(reminder_time, "%H:%M").time())
+        refill_start_time = mytz.localize(refill_start_time)
+        
+        refill_event.add('dtstart', refill_start_time)
+        refill_event.add('dtend', refill_start_time + timedelta(hours=1))
+        
+        # Create alarm for 15 minutes before refill reminder
+        refill_alarm = Alarm()
+        refill_alarm.add('action', 'DISPLAY')
+        refill_alarm.add('description', f'Time to refill {pet_name}\'s {product_name}!')
+        refill_alarm.add('trigger', timedelta(minutes=-15))
+
+    refill_event.add('dtstamp', datetime.now())
+    refill_event.add('uid', str(uuid.uuid4()))
+    
+    # Add categories to help distinguish the event types
+    refill_event.add('categories', ['MEDICATION', 'REFILL', 'PET_CARE'])
+    
+    # Add the refill alarm to the refill event
+    refill_event.add_component(refill_alarm)
+    
+    # Add refill event to calendar
+    cal.add_component(refill_event)
     
     return cal.to_ical().decode('utf-8')
 
