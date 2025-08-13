@@ -859,14 +859,9 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             <!-- QR Code Information Text -->
             <div class="qr-info-text" style="margin-top: 15px; padding: 15px; background: rgba(38, 44, 101, 0.05); border-radius: 10px; border-left: 4px solid var(--accent-color);">
                 <div style="font-family: var(--secondary-font); font-weight: 600; font-size: 16px; line-height: 24px; color: var(--accent-color); margin-bottom: 8px; text-align: center;">
-                    📱 Want to add to your mobile calendar? Simply Scan the QR code below!
+                    📱 Want to add to your mobile calendar? Simply scan the QR code below!
                 </div>
             </div>
-            
-            <!-- Toggle QR Code Button -->
-            <button id="toggleQRBtn" onclick="toggleQR()" class="btn btn-secondary" style="margin-top: 10px;">
-                📴 Hide QR Code ▲
-            </button>
 
             <!-- QR Code Section (shown by default on desktop) -->
             <div id="qrContainer" class="qr-section">
@@ -879,22 +874,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 </div>
             </div>
         </div>
-
-
     <script>
-        function toggleQR() {{
-            var qrDiv = document.getElementById("qrContainer");
-            var btn = document.getElementById("toggleQRBtn");
-            if (qrDiv.style.display === "none" || qrDiv.style.display === "") {{
-                qrDiv.style.display = "block";
-                btn.innerHTML = "📴 Hide QR Code ▲";
-            }} else {{
-                qrDiv.style.display = "none";
-                btn.innerHTML = "📱 Show QR Code ▼";
-            }}
-        }}
-
-
         // Device detection and instructions
         function showDeviceInstructions() {{
             const userAgent = navigator.userAgent;
@@ -971,7 +951,7 @@ def generate_qr_code(web_page_url, logo_path):
     qr.make(fit=True)
     
     # Create QR code with green background
-    qr_img = qr.make_image(fill_color="black", back_color="#009FDF").convert("RGB")
+    qr_img = qr.make_image(fill_color="black", back_color="#FFFFFF").convert("RGB")
 
     logo = Image.open(logo_path)
     qr_width, qr_height = qr_img.size
