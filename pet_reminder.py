@@ -857,6 +857,18 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
 
         <!-- QR Code Container (hidden on mobile) -->
         <div class="qr-container">
+            <!-- QR Code Information Text -->
+            <div class="qr-info-text" style="margin-top: 15px; padding: 15px; background: rgba(38, 44, 101, 0.05); border-radius: 10px; border-left: 4px solid var(--accent-color);">
+                <div style="font-family: var(--secondary-font); font-weight: 600; font-size: 16px; line-height: 24px; color: var(--accent-color); margin-bottom: 8px; text-align: center;">
+                    📱 Want to Add to your mobile calendar?
+                </div>
+                <div style="font-family: var(--secondary-font); font-weight: 400; font-size: 14px; line-height: 20px; color: var(--primary-color); text-align: left;">
+                    1. Simply click on "Show QR Code".<br>
+                    2. Scan the QR code.<br>
+                    3. Add to your Mobile Calendar! It's easy!
+                </div>
+            </div>
+            
             <!-- Toggle QR Code Button -->
             <button id="toggleQRBtn" onclick="toggleQR()" class="btn btn-secondary" style="margin-top: 10px;">
                 📱 Show QR Code ▼
