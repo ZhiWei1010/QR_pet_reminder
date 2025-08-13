@@ -690,13 +690,26 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             border-left: 4px solid var(--accent-color);
         }}
 
-        /* QR Code section - Desktop Only */
+        /* QR Code container - Hidden on mobile */
+        .qr-container {{
+            margin-top: 20px;
+        }}
+
+        /* QR Code section - Shown by default on desktop */
         .qr-section {{
             background-color: var(--card-background);
             padding: 20px;
             text-align: center;
             border: 3px solid var(--accent-color);
-            display: block;
+            border-radius: 15px;
+            margin-top: 15px;
+            display: block; /* Changed from 'none' to 'block' */
+            animation: fadeIn 0.3s ease-in-out;
+        }}
+        
+        @keyframes fadeIn {{
+            from {{ opacity: 0; transform: translateY(-10px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
         }}
         
         /* Company Typography - Subhead2 for QR title */
@@ -762,17 +775,17 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         }}
         
         @media (max-width: 480px) {{
+            /* Hide entire QR code container on mobile */
+            .qr-container {{
+                display: none !important;
+            }}
+            
             body {{
                 padding: 15px;
             }}
             
             .container {{
                 padding: 25px 20px;
-            }}
-            
-            /* Hide QR code section on mobile */
-            .qr-section {{
-                display: none !important;
             }}
             
             /* Mobile Typography Adjustments */
@@ -842,13 +855,6 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 max-height: 80px;
             }}
         }}
-        
-        /* Media query for tablets and larger screens - Show QR code */
-        @media (min-width: 481px) {{
-            .qr-section {{
-                display: block !important;
-            }}
-        }}
     </style>
 </head>
 <body>
@@ -858,7 +864,6 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 {f'<img src="{logo_data_url}" alt="BI Logo" class="logo-img">' if logo_data_url else '<div class="logo-fallback">🐾</div>'}
             </div>
             <div class="pet-name">{pet_name.upper()}</div>
-            <div class="medication">({product_name})</div>
         </div>
         
         <div class="details">
@@ -879,7 +884,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 <span class="detail-value">{reminder_details['total_reminders']}</span>
             </div>
             {f"""<div class="times-section">
-                <div class="times-title">⏰ Reminder Times:</div>
+                <div class="times-title">⏰ Reminder Time:</div>
                 <div class="times-list">
                     {times_html_list}
                 </div>
@@ -904,45 +909,37 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             🔙 Back to Form
         </button>
 
-        <!-- Toggle QR Code Button -->
-        <button id="toggleQRBtn" onclick="toggleQR()" class="btn btn-secondary" style="margin-top: 10px;">
-            📴 Hide QR Code ▲
-        </button>
+        <!-- QR Code Container (hidden on mobile) -->
+        <div class="qr-container">
+            <!-- QR Code Information Text -->
+            <div class="qr-info-text" style="margin-top: 15px; padding: 15px; background: rgba(38, 44, 101, 0.05); border-radius: 10px; border-left: 4px solid var(--accent-color);">
+                <div style="font-family: var(--secondary-font); font-weight: 600; font-size: 16px; line-height: 24px; color: var(--accent-color); margin-bottom: 8px; text-align: center;">
+                    📱 Want to add to your mobile calendar? Simply scan the QR code below!
+                </div>
+            </div>
 
-        <!-- QR Code Section (initially hidden with animation) -->
-        <div id="qrContainer" style="; overflow: hidden; transition: all 0.5s ease;">
-            <div class="qr-title">📱 Scan QR Code to add to Mobile Calendar!</div>
-            <div style="text-align: center; margin: 15px 0;">
-                <img src="data:image/png;base64,{qr_base64}"
-                    alt="QR Code for Pet Reminder"
-                    class="qr-image"
-                    style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
+            <!-- QR Code Section (shown by default on desktop) -->
+            <div id="qrContainer" class="qr-section">
+                <div class="qr-title">📱 Scan QR Code to add to Mobile Calendar!</div>
+                <div style="text-align: center; margin: 15px 0;">
+                    <img src="data:image/png;base64,{qr_base64}"
+                        alt="QR Code for Pet Reminder"
+                        class="qr-image"
+                        style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
+                </div>
             </div>
         </div>
-
-
     <script>
-        function toggleQR() {{
-            var qrDiv = document.getElementById("qrContainer");
-            var btn = document.getElementById("toggleQRBtn");
-            if (qrDiv.style.display === "none") {{
-                qrDiv.style.display = "block";
-                btn.innerHTML = "📴 Hide QR Code ▲";
-            }} else {{
-                qrDiv.style.display = "none";
-                btn.innerHTML = "📱 Show QR Code ▼";
-            }}
-        }}
-
-
         // Device detection and instructions
         function showDeviceInstructions() {{
             const userAgent = navigator.userAgent;
             
             if (/iPhone|iPad|iPod/i.test(userAgent)) {{
-                document.querySelector('.ios-instructions').style.display = 'block';
+                const iosInstructions = document.querySelector('.ios-instructions');
+                if (iosInstructions) iosInstructions.style.display = 'block';
             }} else if (/Android/i.test(userAgent)) {{
-                document.querySelector('.android-instructions').style.display = 'block';
+                const androidInstructions = document.querySelector('.android-instructions');
+                if (androidInstructions) androidInstructions.style.display = 'block';
             }}
         }}
         
@@ -1009,7 +1006,7 @@ def generate_qr_code(web_page_url, logo_path):
     qr.make(fit=True)
     
     # Create QR code with green background
-    qr_img = qr.make_image(fill_color="black", back_color="#009FDF").convert("RGB")
+    qr_img = qr.make_image(fill_color="black", back_color="#FFFFFF").convert("RGB")
 
     logo = Image.open(logo_path)
     qr_width, qr_height = qr_img.size
