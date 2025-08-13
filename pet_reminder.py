@@ -635,13 +635,26 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             border-left: 4px solid var(--accent-color);
         }}
 
-        /* QR Code section - Desktop Only */
+        /* QR Code container - Hidden on mobile */
+        .qr-container {{
+            margin-top: 20px;
+        }}
+
+        /* QR Code section - Hidden by default on desktop */
         .qr-section {{
             background-color: var(--card-background);
             padding: 20px;
             text-align: center;
             border: 3px solid var(--accent-color);
-            display: block;
+            border-radius: 15px;
+            margin-top: 15px;
+            display: none; /* Hidden by default */
+            animation: fadeIn 0.3s ease-in-out;
+        }}
+        
+        @keyframes fadeIn {{
+            from {{ opacity: 0; transform: translateY(-10px); }}
+            to {{ opacity: 1; transform: translateY(0); }}
         }}
         
         /* Company Typography - Subhead2 for QR title */
@@ -707,17 +720,17 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         }}
         
         @media (max-width: 480px) {{
+            /* Hide entire QR code container on mobile */
+            .qr-container {{
+                display: none !important;
+            }}
+            
             body {{
                 padding: 15px;
             }}
             
             .container {{
                 padding: 25px 20px;
-            }}
-            
-            /* Hide QR code section on mobile */
-            .qr-section {{
-                display: none !important;
             }}
             
             /* Mobile Typography Adjustments */
@@ -787,13 +800,6 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 max-height: 80px;
             }}
         }}
-        
-        /* Media query for tablets and larger screens - Show QR code */
-        @media (min-width: 481px) {{
-            .qr-section {{
-                display: block !important;
-            }}
-        }}
     </style>
 </head>
 <body>
@@ -849,19 +855,25 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             🔙 Back to Form
         </button>
 
-        <!-- Toggle QR Code Button -->
-        <button id="toggleQRBtn" onclick="toggleQR()" class="btn btn-secondary" style="margin-top: 10px;">
-            📴 Hide QR Code ▲
-        </button>
+        <!-- QR Code Container (hidden on mobile) -->
+        <div class="qr-container">
+            <!-- Toggle QR Code Button -->
+            <button id="toggleQRBtn" onclick="toggleQR()" class="btn btn-secondary" style="margin-top: 10px;">
+                📱 Show QR Code ▼
+            </button>
 
-        <!-- QR Code Section (initially hidden with animation) -->
-        <div id="qrContainer" style="; overflow: hidden; transition: all 0.5s ease;">
-            <div class="qr-title">📱 Scan QR Code to add to Mobile Calendar!</div>
-            <div style="text-align: center; margin: 15px 0;">
-                <img src="data:image/png;base64,{qr_base64}"
-                    alt="QR Code for Pet Reminder"
-                    class="qr-image"
-                    style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
+            <!-- QR Code Section (initially hidden with animation) -->
+            <div id="qrContainer" class="qr-section">
+                <div class="qr-title">📱 Scan QR Code to add to Mobile Calendar!</div>
+                <div style="text-align: center; margin: 15px 0;">
+                    <img src="data:image/png;base64,{qr_base64}"
+                        alt="QR Code for Pet Reminder"
+                        class="qr-image"
+                        style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
+                </div>
+                <div class="qr-link">
+                    Can't scan? <a href="{calendar_url}">Click here instead</a>
+                </div>
             </div>
         </div>
 
@@ -870,7 +882,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         function toggleQR() {{
             var qrDiv = document.getElementById("qrContainer");
             var btn = document.getElementById("toggleQRBtn");
-            if (qrDiv.style.display === "none") {{
+            if (qrDiv.style.display === "none" || qrDiv.style.display === "") {{
                 qrDiv.style.display = "block";
                 btn.innerHTML = "📴 Hide QR Code ▲";
             }} else {{
@@ -885,9 +897,11 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             const userAgent = navigator.userAgent;
             
             if (/iPhone|iPad|iPod/i.test(userAgent)) {{
-                document.querySelector('.ios-instructions').style.display = 'block';
+                const iosInstructions = document.querySelector('.ios-instructions');
+                if (iosInstructions) iosInstructions.style.display = 'block';
             }} else if (/Android/i.test(userAgent)) {{
-                document.querySelector('.android-instructions').style.display = 'block';
+                const androidInstructions = document.querySelector('.android-instructions');
+                if (androidInstructions) androidInstructions.style.display = 'block';
             }}
         }}
         
