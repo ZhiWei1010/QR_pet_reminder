@@ -863,7 +863,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                     📱 Want to Add to your mobile calendar?
                 </div>
                 <div style="font-family: var(--secondary-font); font-weight: 400; font-size: 14px; line-height: 20px; color: var(--primary-color); text-align: left;">
-                    1. Simply click on "Show QR Code".<br>
+                    1. Simply click on the "Show QR Code" button below.<br>
                     2. Scan the QR code.<br>
                     3. Add to your Mobile Calendar! It's easy!
                 </div>
@@ -883,14 +883,87 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                         class="qr-image"
                         style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
                 </div>
-                <div class="qr-link">
-                    Can't scan? <a href="{calendar_url}">Click here instead</a>
+                <div class="qr-alternatives" style="margin-top: 15px; padding: 15px; background: rgba(255, 255, 255, 0.8); border-radius: 10px; border: 1px solid var(--border-color);">
+                    <div style="font-family: var(--secondary-font); font-weight: 600; font-size: 14px; color: var(--accent-color); margin-bottom: 10px; text-align: center;">
+                        Can't scan? No problem! Share to your phone:
+                    </div>
+                    
+                    <!-- Copy Link Button -->
+                    <button onclick="copyCalendarLink()" class="copy-btn" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #28a745; color: white; border: none; border-radius: 6px; font-family: var(--primary-font); font-weight: bold; font-size: 12px; cursor: pointer; transition: all 0.3s ease;">
+                        📋 Copy Calendar Link
+                    </button>
+                    
+                    <!-- Sharing Options -->
+                    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+                        <button onclick="shareViaEmail()" title="Share via Email" style="padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; transition: all 0.3s ease;">
+                            📧
+                        </button>
+                        <button onclick="shareViaSMS()" title="Share via SMS" style="padding: 8px 12px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; transition: all 0.3s ease;">
+                            💬
+                        </button>
+                        <button onclick="shareViaWhatsApp()" title="Share via WhatsApp" style="padding: 8px 12px; background: #25d366; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; transition: all 0.3s ease;">
+                            📱
+                        </button>
+                        <a href="{calendar_url}" download="{pet_name.upper()}_{product_name}_reminder.ics" title="Direct Download" style="padding: 8px 12px; background: var(--accent-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; text-decoration: none; display: inline-block; transition: all 0.3s ease;">
+                            ⬇️
+                        </a>
+                    </div>
+                    
+                    <div style="font-family: var(--secondary-font); font-size: 10px; color: #666; text-align: center; margin-top: 8px;">
+                        Email • SMS • WhatsApp • Direct Download
+                    </div>
                 </div>
             </div>
         </div>
 
 
     <script>
+        // Calendar sharing functions
+        function copyCalendarLink() {{
+            const calendarUrl = "{calendar_url}";
+            navigator.clipboard.writeText(calendarUrl).then(function() {{
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ Link Copied!';
+                btn.style.background = '#28a745';
+                setTimeout(function() {{
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#28a745';
+                }}, 2000);
+            }}).catch(function() {{
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = calendarUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ Link Copied!';
+                setTimeout(function() {{
+                    btn.innerHTML = originalText;
+                }}, 2000);
+            }});
+        }}
+        
+        function shareViaEmail() {{
+            const subject = encodeURIComponent("📅 {pet_name.upper()} Medication Reminder Calendar");
+            const body = encodeURIComponent("Hi! Here's the calendar reminder for {pet_name.upper()}'s medication ({product_name}). Click the link to add it to your calendar: {calendar_url}");
+            window.open(`mailto:?subject=${{subject}}&body=${{body}}`);
+        }}
+        
+        function shareViaSMS() {{
+            const message = encodeURIComponent("📅 {pet_name.upper()} medication reminder calendar: {calendar_url}");
+            window.open(`sms:?body=${{message}}`);
+        }}
+        
+        function shareViaWhatsApp() {{
+            const message = encodeURIComponent("📅 {pet_name.upper()} medication reminder calendar: {calendar_url}");
+            window.open(`https://wa.me/?text=${{message}}`);
+        }}
+
         function toggleQR() {{
             var qrDiv = document.getElementById("qrContainer");
             var btn = document.getElementById("toggleQRBtn");
