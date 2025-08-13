@@ -809,7 +809,6 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 {f'<img src="{logo_data_url}" alt="BI Logo" class="logo-img">' if logo_data_url else '<div class="logo-fallback">🐾</div>'}
             </div>
             <div class="pet-name">{pet_name.upper()}</div>
-            <div class="medication">({product_name})</div>
         </div>
         
         <div class="details">
@@ -830,7 +829,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 <span class="detail-value">{reminder_details['total_reminders']}</span>
             </div>
             {f"""<div class="times-section">
-                <div class="times-title">⏰ Reminder Times:</div>
+                <div class="times-title">⏰ Reminder Time:</div>
                 <div class="times-list">
                     {times_html_list}
                 </div>
