@@ -2084,7 +2084,7 @@ def main():
     st.text("")  # Spacing
 
     # Main form section
-    st.markdown(company_heading('📋 Reminder Details', 'subhead2'), unsafe_allow_html=True)
+    st.markdown(company_heading('Reminder Details', 'subhead2'), unsafe_allow_html=True)
     
     # Pet Name Input - The labels should now be styled automatically
     pet_name = st.text_input(
@@ -2096,7 +2096,7 @@ def main():
     product_name = "NexGard SPECTRA"
     
     # Date Range Selection
-    st.markdown(company_heading('📅 Reminder Period', 'body1'), unsafe_allow_html=True)
+    st.markdown(company_heading('Reminder Period', 'body1'), unsafe_allow_html=True)
     col_start, col_end = st.columns(2)
     
     with col_start:
@@ -2118,7 +2118,7 @@ def main():
         )
     
     # Multiple Times Per Day with Duration Limits
-    st.markdown(company_heading('⏰ Reminder Time (Optional)', 'body1'), unsafe_allow_html=True)
+    st.markdown(company_heading('Reminder Time (Optional)', 'body1'), unsafe_allow_html=True)
     
     # Get saved selected times or use empty list
     saved_times = get_form_data('selected_time', [])
@@ -2127,7 +2127,7 @@ def main():
     custom_time_data = saved_times[0] if saved_times else None
     custom_checked = custom_time_data is not None
 
-    use_custom_time = st.checkbox("🕐 Custom Time", key="custom", value=custom_checked)
+    use_custom_time = st.checkbox("Custom Time", key="custom", value=custom_checked)
 
     default_time = datetime.strptime("12:00", "%H:%M").time()
 
@@ -2146,9 +2146,9 @@ def main():
     
     # Info display using company styling
     if selected_time == '':
-        info_text = '📅 Reminder Frequency: **Monthly**'
+        info_text = 'Reminder Frequency: **Monthly**'
     else:
-        info_text = f'📅 Reminder Frequency: **Monthly** \t\t 🕛 Reminder time: **{selected_time}**'
+        info_text = f'Reminder Frequency: **Monthly** \t\t Reminder time: **{selected_time}**'
     
     st.info(info_text)
 
@@ -2196,14 +2196,14 @@ def main():
                     ''', unsafe_allow_html=True)
                     success = generate_content(pet_name, product_name, start_date, dosage, selected_time, notes)
                     if success:
-                        st.success("✅ Calendar reminder generated successfully!  \n🔀 **Redirecting to Validation Page...**")
+                        st.success("Calendar reminder generated successfully!  \n**Redirecting to Validation Page...**")
                         web_page_url = st.session_state.generated_content.get("web_page_url")
                         st.markdown(f"""
                             <meta http-equiv="refresh" content="2;url={web_page_url}">
                                 """,  
                                 unsafe_allow_html=True)
             else:
-                st.warning("⚠️ Please fill in Pet Name")
+                st.warning("Please fill in Pet Name")
     
     with col2:
         if st.button("Clear", key="clear_btn"):
