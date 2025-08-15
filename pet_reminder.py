@@ -376,7 +376,53 @@ def upload_reminder_image_to_s3(image_bytes, file_id):
     except Exception as e:
         st.error(f"Error uploading image to S3: {e}")
         return None
-
+    
+def get_html_icon(icon_path, alt_text, size="medium"):
+    """Helper function to get base64 encoded icon for HTML
+    
+    Args:
+        icon_path: Path to the PNG icon file
+        alt_text: Alternative text for accessibility
+        size: Icon size - "small" (16px), "medium" (22px), "large" (28px), "xlarge" (40px), or custom "XYpx"
+    """
+    import base64
+    import os
+    
+    # Define size mappings to match font sizes in your CSS
+    size_map = {
+        "small": "18px",      # For Body2 font (16px)
+        "medium": "28px",     # For Hero Body font (22px) 
+        "large": "36px",      # For Superhead1/Body1 font (18px) but larger for visibility
+        "xlarge": "48px",
+        "button": "32px",     # For H1/large headings
+        "title": "60px"       # For pet name title size
+    }
+    
+    # Handle custom size (e.g., "28px") or use predefined sizes
+    if size.endswith("px"):
+        icon_size = size
+    else:
+        icon_size = size_map.get(size, "22px")
+    
+    if os.path.exists(icon_path):
+        try:
+            with open(icon_path, "rb") as f:
+                icon_bytes = f.read()
+                icon_b64 = base64.b64encode(icon_bytes).decode()
+                return f'<img src="data:image/png;base64,{icon_b64}" alt="{alt_text}" style="width:{icon_size};height:{icon_size};vertical-align:middle;">'
+        except:
+            pass
+    # Fallback emojis
+    fallback_emojis = {
+        "clock": "⏰",
+        "calendar": "📅",
+        "mobile": "📱",
+        "notes": "📝",
+        "back": "🔙",
+        "pet": "🐾"
+    }
+    return fallback_emojis.get(alt_text, "📝")
+        
 def create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes):
     """Create HTML page that serves calendar with device detection"""
     # Base64 encode the web page specific logo
@@ -389,6 +435,11 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 logo_data_url = f"data:image/png;base64,{logo_b64}"
         except:
             pass
+    
+    # Get icon HTML strings - Calendar icon made larger to match visual weight of back icon
+    clock_icon = get_html_icon("./assets/icons/System_icons_W_RSG_clock-icon.png", "clock", "large")
+    calendar_icon = get_html_icon("./assets/icons/calendar_white_resized.png", "calendar", "button")  # Using xlarge (48px) for better visibility
+    back_icon = get_html_icon("./assets/icons/left_nexgard_arrow_blue.png", "back", "button")
     
     # Format reminder times for display
     times_html_list = ""
@@ -404,7 +455,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐾 {pet_name.upper()} - Medication Reminder</title>
+    <title>{pet_name.upper()} - Medication Reminder</title>
     
     <!-- Import Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -594,6 +645,48 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             opacity: 0.9;
         }}
         
+        /* Icon styling for consistent appearance */
+        .icon-small {{
+            width: 18px;
+            height: 18px;
+            vertical-align: middle;
+            margin-right: 8px;
+        }}
+        
+        .icon-medium {{
+            width: 28px;
+            height: 28px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }}
+        
+        .icon-large {{
+            width: 36px;
+            height: 36px;
+            vertical-align: middle;
+            margin-right: 12px;
+        }}
+        
+        .icon-xlarge {{
+            width: 48px;
+            height: 48px;
+            vertical-align: middle;
+            margin-right: 12px;
+        }}
+        
+        .icon-button {{
+            width: 32px;
+            height: 32px;
+            vertical-align: middle;
+            margin-right: 12px;
+        }}
+        
+        .icon-title {{
+            width: 60px;
+            height: 60px;
+            vertical-align: middle;
+        }}
+        
         /* Company Button Styles */
         .btn {{
             display: flex;
@@ -611,6 +704,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             letter-spacing: 0.5px;
             box-sizing: border-box;
             padding: 0 40px !important;
+            gap: 8px; /* Add gap between icon and text for proper spacing */
         }}
         
         .btn:hover {{
@@ -633,7 +727,9 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             justify-content: center !important;
             text-align: center !important;
             line-height: 1 !important;
-            padding: 0 40px !important;
+            padding: 0 20px !important; /* Reduced padding to accommodate icon */
+            white-space: nowrap; /* Prevent text wrapping */
+            gap: 10px; /* Space between icon and text */
         }}
 
         .btn-primary:hover {{
@@ -660,7 +756,9 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             background-color: transparent !important;
             color: #262C65 !important;
             border: 2px solid #0055aa !important;   
-            padding: 0 40px !important;
+            padding: 0 20px !important; /* Reduced padding to accommodate icon */
+            white-space: nowrap; /* Prevent text wrapping */
+            gap: 10px; /* Space between icon and text */
         }}
         
         .instructions {{
@@ -703,7 +801,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             border: 3px solid var(--accent-color);
             border-radius: 15px;
             margin-top: 15px;
-            display: block; /* Changed from 'none' to 'block' */
+            display: block;
             animation: fadeIn 0.3s ease-in-out;
         }}
         
@@ -788,6 +886,40 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 padding: 25px 20px;
             }}
             
+            /* Mobile Button Adjustments */
+            .btn-primary {{
+                font-size: 11pt !important; /* Smaller font for mobile */
+                padding: 0 10px !important; /* Less padding */
+                gap: 6px !important; /* Smaller gap */
+                height: 48px !important; /* Slightly shorter button */
+            }}
+            
+            .btn-secondary {{
+                font-size: 11pt !important; /* Smaller font for mobile */
+                padding: 0 10px !important; /* Less padding */
+                gap: 6px !important; /* Smaller gap */
+                height: 48px !important; /* Slightly shorter button */
+            }}
+            
+            /* Smaller icons on mobile */
+            .icon-button {{
+                width: 18px !important;
+                height: 18px !important;
+                margin-right: 0 !important; /* Remove margin since we use gap */
+            }}
+            
+            .icon-large {{
+                width: 24px !important;
+                height: 24px !important;
+                margin-right: 0 !important;
+            }}
+            
+            .icon-medium {{
+                width: 20px !important;
+                height: 20px !important;
+                margin-right: 0 !important;
+            }}
+            
             /* Mobile Typography Adjustments */
             .pet-name {{
                 font-size: 48px;
@@ -841,10 +973,6 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 line-height: 20px;
             }}
             
-            .btn {{
-                padding: 0 40px !important;
-            }}
-            
             .logo-container {{
                 width: 80px;
                 height: 80px;
@@ -861,7 +989,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
     <div class="container">
         <div class="header">
             <div class="logo-container">
-                {f'<img src="{logo_data_url}" alt="BI Logo" class="logo-img">' if logo_data_url else '<div class="logo-fallback">🐾</div>'}
+                {f'<img src="{logo_data_url}" alt="BI Logo" class="logo-img">'}
             </div>
             <div class="pet-name">{pet_name.upper()}</div>
         </div>
@@ -884,7 +1012,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 <span class="detail-value">{reminder_details['total_reminders']}</span>
             </div>
             {f"""<div class="times-section">
-                <div class="times-title">⏰ Reminder Time:</div>
+                <div class="times-title">Reminder Time:</div>
                 <div class="times-list">
                     {times_html_list}
                 </div>
@@ -894,19 +1022,19 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             
             {f'''
             <div class="notes-section">
-                <div class="notes-title">📝 Additional Notes:</div>
+                <div class="notes-title">Additional Notes:</div>
                 <div class="notes-text">{reminder_details['notes']}</div>
             </div>
             ''' if reminder_details.get('notes') and reminder_details['notes'].strip() else ''}
         </div>
         
         <a href="{calendar_url}" class="btn btn-primary" download="{pet_name.upper()}_{product_name}_reminder.ics">
-            📅 Add to My Calendar
+            {calendar_icon} Add to My Calendar
         </a>
         
         <!-- Back to Form Button -->
         <button onclick="window.history.back();" class="btn btn-primary" style="margin-top: 10px;">
-            🔙 Back to Form
+            {back_icon} Back to Form
         </button>
 
         <!-- QR Code Container (hidden on mobile) -->
@@ -914,13 +1042,13 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             <!-- QR Code Information Text -->
             <div class="qr-info-text" style="margin-top: 15px; padding: 15px; background: rgba(38, 44, 101, 0.05); border-radius: 10px; border-left: 4px solid var(--accent-color);">
                 <div style="font-family: var(--secondary-font); font-weight: 600; font-size: 16px; line-height: 24px; color: var(--accent-color); margin-bottom: 8px; text-align: center;">
-                    📱 Want to add to your mobile calendar? Simply scan the QR code below!
+                    Want to add to your mobile calendar? Simply scan the QR code below!
                 </div>
             </div>
 
             <!-- QR Code Section (shown by default on desktop) -->
             <div id="qrContainer" class="qr-section">
-                <div class="qr-title">📱 Scan QR Code to add to Mobile Calendar!</div>
+                <div class="qr-title">Scan QR Code to add to mobile calendar!</div>
                 <div style="text-align: center; margin: 15px 0;">
                     <img src="data:image/png;base64,{qr_base64}"
                         alt="QR Code for Pet Reminder"
@@ -952,13 +1080,23 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
                 downloadBtn.addEventListener('click', function(e) {{
                     // Let the default download behavior work
                     setTimeout(function() {{
-                        // Optional: Show a brief success message
-                        downloadBtn.innerHTML = '✅ Calendar File Ready!';
+                        // Show success message with consistent text styling
+                        downloadBtn.innerHTML = 'Calendar File Ready!';
                         downloadBtn.style.background = '#28a745';
+                        downloadBtn.style.fontFamily = 'Arial, sans-serif';
+                        downloadBtn.style.fontWeight = 'bold';
+                        downloadBtn.style.fontSize = '14pt';
+                        downloadBtn.style.textTransform = 'capitalize';
+                        downloadBtn.style.letterSpacing = '0';
                         
                         setTimeout(function() {{
-                            downloadBtn.innerHTML = '📅 Add to My Calendar';
+                            downloadBtn.innerHTML = 'Add To My Calendar';
                             downloadBtn.style.background = 'var(--accent-color)';
+                            downloadBtn.style.fontFamily = 'Arial, sans-serif';
+                            downloadBtn.style.fontWeight = 'bold';
+                            downloadBtn.style.fontSize = '14pt';
+                            downloadBtn.style.textTransform = 'capitalize';
+                            downloadBtn.style.letterSpacing = '0';
                         }}, 2000);
                     }}, 500);
                 }});
