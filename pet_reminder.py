@@ -19,7 +19,7 @@ import pytz
 # Configure page with mobile optimization
 st.set_page_config(
     page_title="Pet Reminder - NexGard SPECTRA",
-    page_icon="🐾",
+    page_icon="./assets/icons/FAV_Icon_chew_CMYK_RSG.png",
     layout="centered"
 )
 
@@ -436,6 +436,16 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
         except:
             pass
     
+    page_icon_url = "./assets/icons/FAV_Icon_chew_CMYK_RSG.png"
+    if os.path.exists(page_icon_url):
+        try:
+            with open(page_icon_url, "rb") as f:
+                icon_bytes = f.read()
+                icon_b64 = base64.b64encode(icon_bytes).decode()
+                icon_data_url = f"data:image/png;base64,{icon_b64}"
+        except:
+            pass
+    
     # Get icon HTML strings - Calendar icon made larger to match visual weight of back icon
     clock_icon = get_html_icon("./assets/icons/System_icons_W_RSG_clock-icon.png", "clock", "large")
     calendar_icon = get_html_icon("./assets/icons/calendar_white_resized.png", "calendar", "button")  # Using xlarge (48px) for better visibility
@@ -456,7 +466,8 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{pet_name.upper()} - Medication Reminder</title>
-    
+    <link rel="icon" href={icon_data_url} type="image/png">
+
     <!-- Import Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     
