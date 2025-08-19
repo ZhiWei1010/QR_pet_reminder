@@ -1089,27 +1089,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             
             if (/iPhone|iPad|iPod|Android/i.test(userAgent)) {{
                 downloadBtn.addEventListener('click', function(e) {{
-                    // Let the default download behavior work
-                    setTimeout(function() {{
-                        // Show success message with consistent text styling
-                        downloadBtn.innerHTML = 'Calendar File Ready!';
-                        downloadBtn.style.background = '#28a745';
-                        downloadBtn.style.fontFamily = 'Arial, sans-serif';
-                        downloadBtn.style.fontWeight = 'bold';
-                        downloadBtn.style.fontSize = '14pt';
-                        downloadBtn.style.textTransform = 'capitalize';
-                        downloadBtn.style.letterSpacing = '0';
-                        
-                        setTimeout(function() {{
-                            downloadBtn.innerHTML = 'Add To My Calendar';
-                            downloadBtn.style.background = 'var(--accent-color)';
-                            downloadBtn.style.fontFamily = 'Arial, sans-serif';
-                            downloadBtn.style.fontWeight = 'bold';
-                            downloadBtn.style.fontSize = '14pt';
-                            downloadBtn.style.textTransform = 'capitalize';
-                            downloadBtn.style.letterSpacing = '0';
-                        }}, 2000);
-                    }}, 500);
+                   
                 }});
             }}
         }}
