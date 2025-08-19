@@ -510,7 +510,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             border: 2px solid var(--border-color);
             border-radius: 20px;
             padding: 30px;
-            max-width: 420px;
+            max-width: 800px; /* CHANGED: Increased from 420px to 800px */
             width: 100%;
             text-align: center;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -561,6 +561,28 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             color: var(--primary-color);
             margin-bottom: 25px;
             opacity: 0.9;
+        }}
+
+        /* NEW: Main content wrapper for side-by-side layout */
+        .content-wrapper {{
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            width: 100%;
+        }}
+
+        /* NEW: Left side content */
+        .main-content {{
+            flex: 1;
+            min-width: 0;
+        }}
+
+        /* NEW: Right side QR code sidebar */
+        .qr-sidebar {{
+            flex: 0 0 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }}
         
         .details {{
@@ -799,21 +821,34 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             border-left: 4px solid var(--accent-color);
         }}
 
-        /* QR Code container - Hidden on mobile */
-        .qr-container {{
-            margin-top: 20px;
+        /* REMOVED: Old .qr-container styling - no longer needed */
+
+        /* NEW: QR info text styling */
+        .qr-info-text {{
+            padding: 15px;
+            background: rgba(38, 44, 101, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
         }}
 
-        /* QR Code section - Shown by default on desktop */
+        .qr-info-title {{
+            font-family: var(--secondary-font);
+            font-weight: 600;
+            font-size: 14px;
+            line-height: 20px;
+            color: var(--accent-color);
+            text-align: center;
+            margin: 0;
+        }}
+
+        /* UPDATED: QR Code section - modified for sidebar */
         .qr-section {{
             background-color: var(--card-background);
             padding: 20px;
             text-align: center;
-            border: 3px solid var(--accent-color);
+            border: 2px solid var(--accent-color);
             border-radius: 15px;
-            margin-top: 15px;
             display: block;
-            animation: fadeIn 0.3s ease-in-out;
         }}
         
         @keyframes fadeIn {{
@@ -821,23 +856,31 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             to {{ opacity: 1; transform: translateY(0); }}
         }}
         
-        /* Company Typography - Subhead2 for QR title */
+        /* UPDATED: Company Typography - Subhead2 for QR title */
         .qr-title {{
             font-family: var(--primary-font);
             font-weight: bold;
-            font-size: 22px;
-            line-height: 28px;
+            font-size: 16px;
+            line-height: 22px;
             color: var(--accent-color);
             margin-bottom: 15px;
         }}
 
+        /* NEW: QR image container */
+        .qr-image-container {{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+        }}
+
+        /* UPDATED: QR image for sidebar */
         .qr-image {{
-            width: 200px;
-            height: 200px;
-            margin: 10px auto;
+            width: 160px;
+            height: 160px;
             background-color: #ffffff;
             border: 2px solid var(--accent-color);
-            padding: 10px;
+            padding: 8px;
             display: block;
         }}
 
@@ -883,10 +926,67 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             line-height: 24px;
         }}
         
+        /* NEW: Mobile responsive - stack vertically on mobile */
+        @media (max-width: 768px) {{
+            .content-wrapper {{
+                flex-direction: column;
+                gap: 20px;
+            }}
+            
+            .qr-sidebar {{
+                flex: none;
+                width: 100%;
+                order: -1; /* Move QR code above main content on mobile */
+            }}
+            
+            .container {{
+                max-width: 420px; /* Back to original mobile width */
+                padding: 25px 20px;
+            }}
+            
+            /* Show QR code on mobile in this layout */
+            .qr-sidebar {{
+                display: flex !important;
+            }}
+            
+            /* Smaller QR code on mobile */
+            .qr-image {{
+                width: 120px;
+                height: 120px;
+                padding: 6px;
+            }}
+            
+            .qr-info-title {{
+                font-size: 12px;
+                line-height: 18px;
+            }}
+            
+            .qr-title {{
+                font-size: 14px;
+                line-height: 20px;
+            }}
+        }}
+        
         @media (max-width: 480px) {{
-            /* Hide entire QR code container on mobile */
-            .qr-container {{
+            /* UPDATED: Hide QR sidebar on very small mobile screens */
+            .qr-sidebar {{
                 display: none !important;
+            }}
+            
+            /* FIX: Center content when QR is hidden */
+            .content-wrapper {{
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }}
+            
+            .main-content {{
+                width: 100%;
+                max-width: none;
+            }}
+            
+            .details {{
+                text-align: left; /* Keep details left-aligned for readability */
             }}
             
             body {{
@@ -895,6 +995,7 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             
             .container {{
                 padding: 25px 20px;
+                max-width: 420px; /* Ensure proper mobile width */
             }}
             
             /* Mobile Button Adjustments */
@@ -1005,69 +1106,74 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             <div class="pet-name">{pet_name.upper()}</div>
         </div>
         
-        <div class="details">
-            <div class="detail-row">
-                <span class="detail-label">Frequency:</span>
-                <span class="detail-value">{reminder_details['frequency']}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Start Date:</span>
-                <span class="detail-value">{reminder_details['start_date']}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Duration:</span>
-                <span class="detail-value">{reminder_details['duration']}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Total Reminders:</span>
-                <span class="detail-value">{reminder_details['total_reminders']}</span>
-            </div>
-            {f"""<div class="times-section">
-                <div class="times-title">Reminder Time:</div>
-                <div class="times-list">
-                    {times_html_list}
+        <!-- NEW: Main content wrapper -->
+        <div class="content-wrapper">
+            <!-- Left side - Event details and buttons -->
+            <div class="main-content">
+                <div class="details">
+                    <div class="detail-row">
+                        <span class="detail-label">Frequency:</span>
+                        <span class="detail-value">{reminder_details['frequency']}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Start Date:</span>
+                        <span class="detail-value">{reminder_details['start_date']}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Duration:</span>
+                        <span class="detail-value">{reminder_details['duration']}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Total Reminders:</span>
+                        <span class="detail-value">{reminder_details['total_reminders']}</span>
+                    </div>
+                    {f"""<div class="times-section">
+                        <div class="times-title">Reminder Time:</div>
+                        <div class="times-list">
+                            {times_html_list}
+                        </div>
+                    </div>
+                    """ if times_html_list != "" else ""}
+                    
+                    {f'''
+                    <div class="notes-section">
+                        <div class="notes-title">Additional Notes:</div>
+                        <div class="notes-text">{reminder_details['notes']}</div>
+                    </div>
+                    ''' if reminder_details.get('notes') and reminder_details['notes'].strip() else ''}
                 </div>
-            </div>
-            """ if times_html_list != "" else ""}
-            
-            
-            {f'''
-            <div class="notes-section">
-                <div class="notes-title">Additional Notes:</div>
-                <div class="notes-text">{reminder_details['notes']}</div>
-            </div>
-            ''' if reminder_details.get('notes') and reminder_details['notes'].strip() else ''}
-        </div>
-        
-        <a href="{calendar_url}" class="btn btn-primary" download="{pet_name.upper()}_{product_name}_reminder.ics">
-            {calendar_icon} Add to My Calendar
-        </a>
-        
-        <!-- Back to Form Button -->
-        <button onclick="window.history.back();" class="btn btn-primary" style="margin-top: 10px;">
-            {back_icon} Back to Form
-        </button>
-
-        <!-- QR Code Container (hidden on mobile) -->
-        <div class="qr-container">
-            <!-- QR Code Information Text -->
-            <div class="qr-info-text" style="margin-top: 15px; padding: 15px; background: rgba(38, 44, 101, 0.05); border-radius: 10px; border-left: 4px solid var(--accent-color);">
-                <div style="font-family: var(--secondary-font); font-weight: 600; font-size: 16px; line-height: 24px; color: var(--accent-color); margin-bottom: 8px; text-align: center;">
-                    Want to add to your mobile calendar? Simply scan the QR code below!
-                </div>
+                
+                <a href="{calendar_url}" class="btn btn-primary" download="{pet_name.upper()}_{product_name}_reminder.ics">
+                    {calendar_icon} Add to My Calendar
+                </a>
+                
+                <!-- Back to Form Button -->
+                <button onclick="window.history.back();" class="btn btn-primary" style="margin-top: 10px;">
+                    {back_icon} Back to Form
+                </button>
             </div>
 
-            <!-- QR Code Section (shown by default on desktop) -->
-            <div id="qrContainer" class="qr-section">
-                <div class="qr-title">Scan QR Code to add to mobile calendar!</div>
-                <div style="text-align: center; margin: 15px 0;">
-                    <img src="data:image/png;base64,{qr_base64}"
-                        alt="QR Code for Pet Reminder"
-                        class="qr-image"
-                        style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
+            <!-- Right side - QR Code (hidden on mobile) -->
+            <div class="qr-sidebar">
+                <!-- QR Code Information Text -->
+                <div class="qr-info-text">
+                    <div class="qr-info-title">
+                        Want to add to your mobile calendar?<br>Simply scan the QR code below!
+                    </div>
+                </div>
+
+                <!-- QR Code Section -->
+                <div id="qrContainer" class="qr-section">
+                    <div class="qr-image-container">
+                        <img src="data:image/png;base64,{qr_base64}"
+                            alt="QR Code for Pet Reminder"
+                            class="qr-image" />
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+    
     <script>
         // Device detection and instructions
         function showDeviceInstructions() {{
@@ -1082,14 +1188,14 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             }}
         }}
         
-        // Auto-redirect to calendar download on mobile for better UX
+        // SIMPLIFIED: Mobile download handler (removed text changes)
         function handleMobileDownload() {{
             const userAgent = navigator.userAgent;
             const downloadBtn = document.querySelector('.btn-primary');
             
             if (/iPhone|iPad|iPod|Android/i.test(userAgent)) {{
                 downloadBtn.addEventListener('click', function(e) {{
-                   
+                    // Let the default download behavior work - no text changes
                 }});
             }}
         }}
