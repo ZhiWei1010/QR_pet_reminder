@@ -1142,8 +1142,8 @@ def upload_web_page_to_s3(html_content, page_id):
         st.error(f"Error uploading page to S3: {e}")
         return None
 
-def generate_qr_code(web_page_url, logo_path):
-    """Generate QR code that points to the web page"""
+def generate_qr_code_preserve_aspect(web_page_url, logo_path, padding=8):
+    """Generate QR code with logo preserving aspect ratio and padding"""
     qr = qrcode.QRCode(
         version=2,
         error_correction=qrcode.constants.ERROR_CORRECT_M,
@@ -1154,18 +1154,35 @@ def generate_qr_code(web_page_url, logo_path):
     qr.add_data(web_page_url)
     qr.make(fit=True)
     
-    # Create QR code with green background
-    qr_img = qr.make_image(fill_color="black", back_color="#FFFFFF").convert("RGB")
-
-    logo = Image.open(logo_path)
-    qr_width, qr_height = qr_img.size
-    logo_size = int(qr_width * 0.2)
-    logo = logo.resize((logo_size, logo_size), resample=Image.Resampling.LANCZOS)
-
+    qr_img = qr.make_image(fill_color="black", back_color="#FFFFFF").convert("RGBA")
+    logo = Image.open(logo_path).convert("RGBA")
     
-    pos = ((qr_width - logo_size) // 2, (qr_height - logo_size) // 2)
-    qr_img.paste(logo, pos, mask=logo if logo.mode == 'RGBA' else None)
-
+    qr_width, qr_height = qr_img.size
+    
+    # Preserve aspect ratio, scale to fit within maximum dimensions
+    max_logo_size = int(qr_width * 0.2)  # 20% of QR code width
+    
+    # Calculate scaling factor to fit logo within max dimensions
+    logo_width, logo_height = logo.size
+    scale_factor = min(max_logo_size / logo_width, max_logo_size / logo_height)
+    
+    new_width = int(logo_width * scale_factor)
+    new_height = int(logo_height * scale_factor)
+    
+    logo_resized = logo.resize((new_width, new_height), resample=Image.Resampling.LANCZOS)
+    
+    # Create background with padding
+    bg_width = new_width + (padding * 2)
+    bg_height = new_height + (padding * 2)
+    logo_background = Image.new('RGBA', (bg_width, bg_height), (255, 255, 255, 255))
+    
+    # Paste logo onto background with padding
+    logo_pos = (padding, padding)
+    logo_background.paste(logo_resized, logo_pos, mask=logo_resized)
+    
+    # Center the logo with background on QR code
+    pos = ((qr_width - bg_width) // 2, (qr_height - bg_height) // 2)
+    qr_img.paste(logo_background, pos, mask=logo_background)
     
     img_buffer = io.BytesIO()
     qr_img.save(img_buffer, format='PNG')
@@ -1401,13 +1418,13 @@ def generate_content(pet_name, product_name, start_date, dosage, selected_time, 
 
         logo_path = "./assets/logos/NGS_X_blue.jpg"
         if calendar_url:
-            qr_image_bytes_placeholder = generate_qr_code("placeholder", logo_path)
+            qr_image_bytes_placeholder = generate_qr_code_preserve_aspect("placeholder", logo_path)
             html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes_placeholder)
             web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
             
             # Generate QR code (use a fallback URL if web page not available)
             qr_target = web_page_url if web_page_url else f"data:text/plain,{pet_name} - {product_name} Reminder"
-            qr_image_bytes = generate_qr_code(qr_target, logo_path)
+            qr_image_bytes = generate_qr_code_preserve_aspect(qr_target, logo_path)
 
             html_content = create_web_page_html(pet_name, product_name, calendar_url, reminder_details, qr_image_bytes)
             web_page_url = upload_web_page_to_s3(html_content, meaningful_id)
