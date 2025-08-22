@@ -1133,18 +1133,16 @@ def create_web_page_html(pet_name, product_name, calendar_url, reminder_details,
             <!-- QR Code Information Text -->
             <div class="qr-info-text">
                 <div class="qr-info-title">
-                    Want to add to your mobile calendar? Simply scan the QR code below!
+                    Want to add to your mobile calendar?<br>Simply scan the QR code below!
                 </div>
             </div>
 
             <!-- QR Code Section -->
             <div id="qrContainer" class="qr-section">
-                <div class="qr-title">Scan QR Code to add to mobile calendar!</div>
-                <div style="text-align: center; margin: 15px 0;">
-                    <img src="data:image/png;base64,{qr_base64}"
-                        alt="QR Code for Pet Reminder"
-                        class="qr-image"
-                        style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
+                <img src="data:image/png;base64,{qr_base64}"
+                    alt="QR Code for Pet Reminder"
+                    class="qr-image"
+                    style="width: 200px; height: 200px; display: block; margin: 0 auto; border: 2px solid #ffffff; padding: 10px; background-color: white;" />
                 </div>
             </div>
         </div>
